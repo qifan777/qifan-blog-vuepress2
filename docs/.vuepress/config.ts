@@ -3,6 +3,7 @@ import {defaultTheme, defineUserConfig} from "vuepress";
 export default defineUserConfig({
     lang: 'zh-CN',
     title: '起凡code闲聊',
+    port:8081,
     description: '起凡全栈项目分享',
     theme: defaultTheme({
         logo: '/images/logo.jpg',
@@ -11,7 +12,8 @@ export default defineUserConfig({
                 text: '项目实战',
                 children: [
                     {text: '飞鸽邮筒', link: '/project/post-letter/'},
-                    {text: '多模块微服务实战', link: '/project/microservice-practice/book'}
+                    {text: '多模块微服务实战', link: '/project/microservice-practice/book'},
+                    {text: 'ChatGPT助手', link: '/project/chatgpt-assistant/'}
                 ]
             },
             {
@@ -34,7 +36,7 @@ export default defineUserConfig({
                     },
                     {
                         text: 'jpa',
-                        children:[
+                        children: [
                             {
                                 text: 'hibernate',
                                 link: '/knowledge/jpa/hibernate/'
@@ -50,6 +52,10 @@ export default defineUserConfig({
                 {text: '后端介绍', link: '/project/post-letter/springboot/'},
                 {text: '小程序介绍', link: '/project/post-letter/uni-app/'},
                 {text: '后台管理介绍', link: '/project/post-letter/vue3/'}
+            ],
+            '/project/chatgpt-assistant/': [
+                {text: '项目介绍', link: '/project/chatgpt-assistant/'},
+                {text: '第八期 websocket+stream请求+proxy', link: '/project/chatgpt-assistant/chapter8/'}
             ]
         }
     })
