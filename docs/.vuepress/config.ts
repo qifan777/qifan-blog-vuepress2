@@ -55,7 +55,9 @@ export default defineUserConfig({
             ],
             '/project/chatgpt-assistant/': [
                 {text: '项目介绍', link: '/project/chatgpt-assistant/'},
-                {text: '第八期 websocket+stream请求+proxy', link: '/project/chatgpt-assistant/chapter8/'}
+                {text: '第八期 websocket+stream请求+proxy', link: '/project/chatgpt-assistant/chapter8/'},
+                {text: '第九期 Vue3/ElementUI Plus实现聊天面板', link: '/project/chatgpt-assistant/chapter9/'}
+
             ]
         }
     })
