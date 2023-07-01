@@ -22,7 +22,7 @@
   <div>图2. 聊天面板骨架</div>
 </div>
 
-```html
+```vue
 <template>
   <!-- 最外层页面于窗口同宽，使聊天面板居中 -->
   <div class="home-view">
@@ -39,51 +39,51 @@
   </div>
 </template>
 <style lang="scss" scoped>
-  .home-view {
-    display: flex;
-    /* 与窗口同宽 */
-    width: 100vw;
-    /* 水平方向上剧中 */
-    justify-content: center;
+.home-view {
+  display: flex;
+  /* 与窗口同宽 */
+  width: 100vw;
+  /* 水平方向上剧中 */
+  justify-content: center;
 
-    .chat-panel {
-      /* 聊天面板flex布局，让会话列表和聊天记录左右展示 */
-      display: flex;
-      /* 让聊天面板圆润一些 */
-      border-radius: 20px;
-      background-color: white;
-      /* 给一些阴影 */
-      box-shadow: 0 0 20px 20px rgba(black, 0.05);
-      /* 与上方增加一些间距 */
-      margin-top: 70px;
-      /* 左侧聊天会话面板*/
-      .session-panel {
-        background-color: rgb(231, 248, 255);
-        width: 300px;
-        border-top-left-radius: 20px;
-        border-bottom-left-radius: 20px;
-        padding: 20px;
-        position: relative;
-        border-right: 1px solid rgba(black, 0.07);
-        /* 标题*/
-        .title {
-          margin-top: 20px;
-          font-size: 20px;
-        }
-        /* 描述*/
-        .description {
-          color: rgba(black, 0.7);
-          font-size: 10px;
-          margin-top: 10px;
-        }
+  .chat-panel {
+    /* 聊天面板flex布局，让会话列表和聊天记录左右展示 */
+    display: flex;
+    /* 让聊天面板圆润一些 */
+    border-radius: 20px;
+    background-color: white;
+    /* 给一些阴影 */
+    box-shadow: 0 0 20px 20px rgba(black, 0.05);
+    /* 与上方增加一些间距 */
+    margin-top: 70px;
+    /* 左侧聊天会话面板*/
+    .session-panel {
+      background-color: rgb(231, 248, 255);
+      width: 300px;
+      border-top-left-radius: 20px;
+      border-bottom-left-radius: 20px;
+      padding: 20px;
+      position: relative;
+      border-right: 1px solid rgba(black, 0.07);
+      /* 标题*/
+      .title {
+        margin-top: 20px;
+        font-size: 20px;
       }
-      /* 右侧消息记录面板*/
-      .message-panel {
-        width: 700px;
-        height: 800px;
+      /* 描述*/
+      .description {
+        color: rgba(black, 0.7);
+        font-size: 10px;
+        margin-top: 10px;
       }
     }
+    /* 右侧消息记录面板*/
+    .message-panel {
+      width: 700px;
+      height: 800px;
+    }
   }
+}
 </style>
 ```
 
@@ -95,27 +95,27 @@
 </div>
 聊天会话可以封装成组件，分散首页的代码逻辑。
 
-```html
+```vue
 <script lang="ts" setup>
-  import { CircleClose } from "@element-plus/icons-vue";
-  import { ChatSession } from "../../../../typings";
-  import { deleteChatSession } from "@/api/chat-session";
-  // active：用来标记当前会话是否处于选中状态
-  // session：用于展示的会话信息
-  const prop = defineProps<{ active: boolean; session: ChatSession }>();
-  // 定义删除事件，当触发删除事件时会向外部发送被删除的会话。
-  const emit = defineEmits<{
-    delete: [session: ChatSession];
-  }>();
-  // 当鼠标放到会话上时，会弹出删除图标，点击删除图标调用删除接口并发送删除事件。
-  const handleDeleteSession = () => {
-    deleteChatSession([prop.session.id]).then((res) => {
-      if (res.success) {
-        // 发送删除事件
-        emit("delete", prop.session);
-      }
-    });
-  };
+import { CircleClose } from "@element-plus/icons-vue";
+import { ChatSession } from "../../../../typings";
+import { deleteChatSession } from "@/api/chat-session";
+// active：用来标记当前会话是否处于选中状态
+// session：用于展示的会话信息
+const prop = defineProps<{ active: boolean; session: ChatSession }>();
+// 定义删除事件，当触发删除事件时会向外部发送被删除的会话。
+const emit = defineEmits<{
+  delete: [session: ChatSession];
+}>();
+// 当鼠标放到会话上时，会弹出删除图标，点击删除图标调用删除接口并发送删除事件。
+const handleDeleteSession = () => {
+  deleteChatSession([prop.session.id]).then((res) => {
+    if (res.success) {
+      // 发送删除事件
+      emit("delete", prop.session);
+    }
+  });
+};
 </script>
 <template>
   <!-- 如果处于激活状态则增加 active class -->
@@ -147,102 +147,102 @@
   </div>
 </template>
 <style lang="scss" scoped>
-  .session-item {
-    /* 加一下padding不要让会话内容靠边界太近 */
-    padding: 12px;
-    background-color: white;
-    /* 给边界一些圆角看起来圆润一些 */
-    border-radius: 10px;
-    /* 固定宽度 */
-    width: 250px;
-    /* 父相子绝，父元素是相对布局的情况下，子元素的绝对布局是相当于父元素绝对布局。 */
-    position: relative;
-    /* 当鼠标放在会话上时改变鼠标的样式，暗示用户可以点击。目前还没做拖动的效果，以后会做。 */
-    cursor: grab;
-    /* 子元素的遮罩一开始会在外面，让溢出的遮罩不显示 */
-    overflow: hidden;
+.session-item {
+  /* 加一下padding不要让会话内容靠边界太近 */
+  padding: 12px;
+  background-color: white;
+  /* 给边界一些圆角看起来圆润一些 */
+  border-radius: 10px;
+  /* 固定宽度 */
+  width: 250px;
+  /* 父相子绝，父元素是相对布局的情况下，子元素的绝对布局是相当于父元素绝对布局。 */
+  position: relative;
+  /* 当鼠标放在会话上时改变鼠标的样式，暗示用户可以点击。目前还没做拖动的效果，以后会做。 */
+  cursor: grab;
+  /* 子元素的遮罩一开始会在外面，让溢出的遮罩不显示 */
+  overflow: hidden;
 
-    .name {
-      /* 会话名称字体要大一些 */
-      font-size: 14px;
-      /* 凸显名称，加粗 */
-      font-weight: 700;
-      width: 200px;
-      /* 加粗后颜色淡一些 */
-      color: rgba(black, 0.8);
-    }
+  .name {
+    /* 会话名称字体要大一些 */
+    font-size: 14px;
+    /* 凸显名称，加粗 */
+    font-weight: 700;
+    width: 200px;
+    /* 加粗后颜色淡一些 */
+    color: rgba(black, 0.8);
+  }
 
-    .count-time {
-      /* 增加一些距离 */
-      margin-top: 10px;
-      /* 让字体小一些不能比会话名称要大（14px） */
-      font-size: 10px;
-      color: rgba(black, 0.5);
-      /* 让消息数量和最近更新时间显示水平显示 */
-      display: flex;
-      /* 让消息数量和最近更新时间分布在水平方向的两端 */
-      justify-content: space-between;
-    }
+  .count-time {
+    /* 增加一些距离 */
+    margin-top: 10px;
+    /* 让字体小一些不能比会话名称要大（14px） */
+    font-size: 10px;
+    color: rgba(black, 0.5);
+    /* 让消息数量和最近更新时间显示水平显示 */
+    display: flex;
+    /* 让消息数量和最近更新时间分布在水平方向的两端 */
+    justify-content: space-between;
+  }
 
-    /* 当处于激活状态时增加蓝色描边 */
-    &.active {
-      /* 增加一些过渡 */
-      transition: all 0.12s linear;
-      border: 2px solid #1d93ab;
-    }
+  /* 当处于激活状态时增加蓝色描边 */
+  &.active {
+    /* 增加一些过渡 */
+    transition: all 0.12s linear;
+    border: 2px solid #1d93ab;
+  }
 
-    /* 当鼠标放在会话上时触发下面的css样式*/
-    &:hover {
-      /* 遮罩入场，从最左侧滑进去，渐渐变得不透明 */
-      .mask {
-        opacity: 1;
-        left: 0;
-      }
-
-      .btn-wrapper {
-        /* 暗示用户这个按钮可以点击 */
-        &:hover {
-          cursor: pointer;
-        }
-
-        /* 按钮入场，从最右侧滑进去，渐渐变得不透明 */
-        opacity: 1;
-        right: 20 px;
-      }
-    }
-
+  /* 当鼠标放在会话上时触发下面的css样式*/
+  &:hover {
+    /* 遮罩入场，从最左侧滑进去，渐渐变得不透明 */
     .mask {
-      /* 渐变样式 */
-      transition: all 0.2s ease-out;
-      /* 相当于父亲绝对布局 */
-      position: absolute;
-      background-color: rgba(black, 0.05);
-      /* 和父亲元素一样宽盖住父元素 */
-      width: 100%;
-      /* 和父亲元素一样高 */
-      height: 100%;
-      /*位置移到父元素的最上面 */
-      top: 0;
-      /* 向父元素的最左侧再增加一个父亲元素当前宽度的距离 */
-      left: -100%;
-      /* 透明度为0 */
-      opacity: 0;
+      opacity: 1;
+      left: 0;
     }
-    /* 删除按钮样式的逻辑和mask类似 */
-    .btn-wrapper {
-      color: rgba(black, 0.5);
-      transition: all 0.2s ease-out;
-      position: absolute;
-      top: 10px;
-      right: -20px;
-      z-index: 10;
-      opacity: 0;
 
-      .edit {
-        margin-right: 5px;
+    .btn-wrapper {
+      /* 暗示用户这个按钮可以点击 */
+      &:hover {
+        cursor: pointer;
       }
+
+      /* 按钮入场，从最右侧滑进去，渐渐变得不透明 */
+      opacity: 1;
+      right: 20 px;
     }
   }
+
+  .mask {
+    /* 渐变样式 */
+    transition: all 0.2s ease-out;
+    /* 相当于父亲绝对布局 */
+    position: absolute;
+    background-color: rgba(black, 0.05);
+    /* 和父亲元素一样宽盖住父元素 */
+    width: 100%;
+    /* 和父亲元素一样高 */
+    height: 100%;
+    /*位置移到父元素的最上面 */
+    top: 0;
+    /* 向父元素的最左侧再增加一个父亲元素当前宽度的距离 */
+    left: -100%;
+    /* 透明度为0 */
+    opacity: 0;
+  }
+  /* 删除按钮样式的逻辑和mask类似 */
+  .btn-wrapper {
+    color: rgba(black, 0.5);
+    transition: all 0.2s ease-out;
+    position: absolute;
+    top: 10px;
+    right: -20px;
+    z-index: 10;
+    opacity: 0;
+
+    .edit {
+      margin-right: 5px;
+    }
+  }
+}
 </style>
 ```
 
@@ -255,48 +255,48 @@
   <div>图4. 会话列表和新建会话</div>
 </center>
 
-```html
+```vue
 <script lang="ts" setup>
-  import { onMounted, ref } from "vue";
-  import { ChatSession } from "../../../typings";
-  import {
-    findChatSessionById,
-    queryChatSession,
-    saveChatSession,
-  } from "@/api/chat-session";
-  import SessionItem from "@/views/home/components/SessionItem.vue";
-  import { CirclePlus } from "@element-plus/icons-vue";
+import { onMounted, ref } from "vue";
+import { ChatSession } from "../../../typings";
+import {
+  findChatSessionById,
+  queryChatSession,
+  saveChatSession,
+} from "@/api/chat-session";
+import SessionItem from "@/views/home/components/SessionItem.vue";
+import { CirclePlus } from "@element-plus/icons-vue";
 
-  const isEdit = ref(false);
-  const activeSession = ref({ messages: [] } as ChatSession);
-  const sessionList = ref([] as ChatSession[]);
-  onMounted(() => {
-    // 查询自己的聊天会话
-    queryChatSession({ pageSize: 1000, pageNum: 1, query: {} }).then((res) => {
-      // 讲会话添加到列表中
-      sessionList.value.push(...res.result.list);
-      // 默认选中的聊天会话是第一个
-      if (sessionList.value.length > 0) {
-        activeSession.value = sessionList.value[0];
-      }
-    });
+const isEdit = ref(false);
+const activeSession = ref({ messages: [] } as ChatSession);
+const sessionList = ref([] as ChatSession[]);
+onMounted(() => {
+  // 查询自己的聊天会话
+  queryChatSession({ pageSize: 1000, pageNum: 1, query: {} }).then((res) => {
+    // 讲会话添加到列表中
+    sessionList.value.push(...res.result.list);
+    // 默认选中的聊天会话是第一个
+    if (sessionList.value.length > 0) {
+      activeSession.value = sessionList.value[0];
+    }
   });
-  // 切换会话
-  const handleSessionSwitch = (session: ChatSession) => {
-    activeSession.value = session;
-  };
-  // 从会话列表中删除会话
-  const handleDeleteSession = (session: ChatSession) => {
-    const index = sessionList.value.findIndex((value) => {
-      return value.id === session.id;
-    });
-    sessionList.value.splice(index, 1);
-  };
-  // 新增会话
-  const handleCreateSession = async () => {
-    const res = await saveChatSession({ topic: "新的聊天" });
-    sessionList.value.unshift((await findChatSessionById(res.result)).result);
-  };
+});
+// 切换会话
+const handleSessionSwitch = (session: ChatSession) => {
+  activeSession.value = session;
+};
+// 从会话列表中删除会话
+const handleDeleteSession = (session: ChatSession) => {
+  const index = sessionList.value.findIndex((value) => {
+    return value.id === session.id;
+  });
+  sessionList.value.splice(index, 1);
+};
+// 新增会话
+const handleCreateSession = async () => {
+  const res = await saveChatSession({ topic: "新的聊天" });
+  sessionList.value.unshift((await findChatSessionById(res.result)).result);
+};
 </script>
 <template>
   <div class="home-view">
@@ -334,39 +334,39 @@
   </div>
 </template>
 <style lang="scss" scoped>
-  .home-view {
+.home-view {
+  /* 省略... */
+  .chat-panel {
     /* 省略... */
-    .chat-panel {
+    .session-panel {
       /* 省略... */
-      .session-panel {
-        /* 省略... */
-        .session-list {
-          .session {
-            /* 每个会话之间留一些间距 */
-            margin-top: 20px;
-          }
+      .session-list {
+        .session {
+          /* 每个会话之间留一些间距 */
+          margin-top: 20px;
         }
+      }
 
-        .button-wrapper {
-          /* session-panel是相对布局，这边的button-wrapper是相对它绝对布局 */
-          position: absolute;
-          bottom: 20px;
-          left: 0;
-          display: flex;
-          /* 让内部的按钮显示在右侧 */
-          justify-content: flex-end;
-          /* 宽度和session-panel一样宽*/
-          width: 100%;
+      .button-wrapper {
+        /* session-panel是相对布局，这边的button-wrapper是相对它绝对布局 */
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        display: flex;
+        /* 让内部的按钮显示在右侧 */
+        justify-content: flex-end;
+        /* 宽度和session-panel一样宽*/
+        width: 100%;
 
-          /* 按钮于右侧边界留一些距离 */
-          .new-session {
-            margin-right: 20px;
-          }
+        /* 按钮于右侧边界留一些距离 */
+        .new-session {
+          margin-right: 20px;
         }
       }
     }
-    /* 省略... */
   }
+  /* 省略... */
+}
 </style>
 ```
 
@@ -386,16 +386,16 @@
   <div>图7. 编辑状态会话名称</div>
 </center>
 
-```html
+```vue
 <script lang="ts" setup>
-  // 省略...
-  import { CirclePlus, Close, EditPen } from "@element-plus/icons-vue";
+// 省略...
+import { CirclePlus, Close, EditPen } from "@element-plus/icons-vue";
 
-  // 省略...
-  const handleUpdateSession = () => {
-    saveChatSession(activeSession.value);
-    isEdit.value = false;
-  };
+// 省略...
+const handleUpdateSession = () => {
+  saveChatSession(activeSession.value);
+  isEdit.value = false;
+};
 </script>
 <template>
   <div class="home-view">
@@ -435,41 +435,41 @@
   </div>
 </template>
 <style lang="scss" scoped>
-  .home-view {
+.home-view {
+  /* 省略... */
+
+  .chat-panel {
     /* 省略... */
 
-    .chat-panel {
+    .message-panel {
       /* 省略... */
 
-      .message-panel {
-        /* 省略... */
+      .header {
+        padding: 20px 20px 0 20px;
+        display: flex;
+        /* 会话名称和编辑按钮在水平方向上分布左右两边 */
+        justify-content: space-between;
 
-        .header {
-          padding: 20px 20px 0 20px;
+        /* 前部的标题和消息条数 */
+        .front {
+          .title {
+            color: rgba(black, 0.7);
+            font-size: 20px;
+          }
+
+          .description {
+            margin-top: 10px;
+            color: rgba(black, 0.5);
+          }
+        }
+        /* 尾部的编辑和取消编辑按钮 */
+        .rear {
           display: flex;
-          /* 会话名称和编辑按钮在水平方向上分布左右两边 */
-          justify-content: space-between;
-
-          /* 前部的标题和消息条数 */
-          .front {
-            .title {
-              color: rgba(black, 0.7);
-              font-size: 20px;
-            }
-
-            .description {
-              margin-top: 10px;
-              color: rgba(black, 0.5);
-            }
-          }
-          /* 尾部的编辑和取消编辑按钮 */
-          .rear {
-            display: flex;
-            align-items: center;
-          }
+          align-items: center;
         }
       }
     }
   }
+}
 </style>
 ```
