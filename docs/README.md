@@ -7,8 +7,8 @@ actions:
   - text: 飞鸽邮筒
     link: /project/post-letter/
     type: primary
-  - text: 私有ChatGPT搭建
-    link: /tools/chatgpt/
+  - text: ChatGPT二次开发实战
+    link: /project/chatgpt-assistant/
     type: secondary
 
 ---

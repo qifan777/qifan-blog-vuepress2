@@ -19,7 +19,8 @@ export default defineUserConfig({
             {
                 text: '工具分享',
                 children: [
-                    {text: '私有ChatGPT搭建', link: '/tools/chatgpt/'}
+                    {text: '私有ChatGPT搭建', link: '/tools/chatgpt/'},
+                    {text: '远程开发环境搭建', link: '/tools/remote-develop/'},
                 ]
             },
             {
