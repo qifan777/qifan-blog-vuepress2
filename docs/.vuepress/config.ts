@@ -43,6 +43,10 @@ export default defineUserConfig({
                                 link: '/knowledge/jpa/hibernate/'
                             }
                         ]
+                    },
+                    {
+                        text: "Nginx博客/网站搭建",
+                        link: "/knowledge/website/"
                     }
                 ]
             }
