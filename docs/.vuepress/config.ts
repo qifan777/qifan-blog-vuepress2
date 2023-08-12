@@ -3,7 +3,7 @@ import {defaultTheme, defineUserConfig} from "vuepress";
 export default defineUserConfig({
     lang: 'zh-CN',
     title: '起凡code闲聊',
-    port:8081,
+    port: 8081,
     description: '起凡全栈项目分享',
     theme: defaultTheme({
         logo: '/images/logo.jpg',
@@ -21,6 +21,8 @@ export default defineUserConfig({
                 children: [
                     {text: '私有ChatGPT搭建', link: '/tools/chatgpt/'},
                     {text: '远程开发环境搭建', link: '/tools/remote-develop/'},
+                    {text: 'vue-press2搭建博客', link: '/tools/vue-press2/'},
+
                 ]
             },
             {
@@ -63,8 +65,6 @@ export default defineUserConfig({
                 {text: '第八期 websocket+stream请求+proxy', link: '/project/chatgpt-assistant/chapter8/'},
                 {text: '第九期 Vue3/ElementUI Plus实现聊天面板', link: '/project/chatgpt-assistant/chapter9/'},
                 {text: '第十期 消息发送和markdown显示消息记录', link: '/project/chatgpt-assistant/chapter10/'}
-
-
             ]
         }
     })
