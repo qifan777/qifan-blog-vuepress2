@@ -1,0 +1,40 @@
+@startuml
+(*)--> "从脚本中获取到需要登记的实体 "
+note right
+如果脚本内容过多提取出需要登记的实体很消耗精力，
+人无法长时间专注，也有可能出现漏掉。[[https://www.jarcheng.top/knowledge/newland/img.png 图片]]
+end note
+-->[实体列表] 从省内批量采集实体
+note right
+1. 需要切换网络，使用VPN登录省内，导致云边网络失效。这样一来一回非常耗时。
+    网络卡顿很影响云桌面的操作。
+2. 采集的时候需要分不同的周期，月，日，无周期需要分开采集。采集完到资产
+    管理中发布实体, 发布完还需要导出发布包，再通过邮件发送出去。
+end note
+--> [发布包]云边导入发布包
+note right: 重新登录云边VPN和云边。
+--> === s1 ===
+--> 开始登记实体
+--> 填写业务口径
+note right: 去规范手册寻找该接口的业务描述。规范手册又有好几册，寻找起来较为费时。
+--> 填写技术口径
+note right: 去原脚本寻找该表的插入SQL语句。
+--> 填写中文字段名称
+note right
+从规范手册中寻找每个字段对应的中文名称，这步是最耗时的。首先有些表的字段很多，
+ 其次有些接口临时表很多，每次都需要重复填写。
+end note
+--> 主键HASH策略
+note right: 从规范手册中寻找主键字段
+--> 建立分区
+note right: 根据不同的统计日期建立不同的分区。
+--> 提交发布上线完成实体登记
+
+@enduml
+
+docker run -d  --name nginx -p 443:443  --network=mynet --network-alias=nginx  \
+ -v /home/nginx/html:/usr/share/nginx/html \
+ -v /home/nginx/conf/nginx.conf:/etc/nginx/nginx.conf \
+ -v /home/nginx/conf/conf.d:/etc/nginx/conf.d \
+ -v /home/nginx/logs:/var/log/nginx \
+ nginx
