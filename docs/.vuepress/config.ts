@@ -22,7 +22,7 @@ export default defineUserConfig({
                     {text: '私有ChatGPT搭建', link: '/tools/chatgpt/'},
                     {text: '远程开发环境搭建', link: '/tools/remote-develop/'},
                     {text: 'vue-press2搭建博客', link: '/tools/vue-press2/'},
-
+                    {text: '持续集成Jenkins', link: '/tools/jenkins/'},
                 ]
             },
             {
