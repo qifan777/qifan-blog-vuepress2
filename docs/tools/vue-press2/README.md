@@ -128,6 +128,12 @@ vue-press的目录结构是这样的，config.js就是配置文件了。我们�
 不同的主题提供了不同的页面配置。同一主题对于首页和普通页面也有不同的配置选项。
 下面以默认主题为例子来讲述如何配置首页和普通页面。
 
+后面我会以我的这个博客项目为例子讲解配置
+
+```shell
+git clone https://github.com/qifan777/qifan-blog-vuepress2
+```
+
 ### 首页配置
 
 先介绍一下首页中的哪些元素是可以配置的。在图2中我已经一一标注在上面了。
@@ -179,4 +185,141 @@ sidebarDepth: 2
 ```
 
 #### 多个页面公用侧边栏
+
 有些博客的内容较多，需要分成很多期来讲，这种情况就可以在全局配置里面对同一路由开头下的页面公用侧边栏。
+
+
+<center>
+<img src="./img_2.png" width="600"/>
+
+图3 多个章节目录
+</center>
+
+在`/docs/.vuepress/config.ts`中配置sidebar，我们这边配置了`/project/chatgpt-assistant/`
+开头的路由都应用相同的侧边栏，其中有四项分别对于图3中的项目介绍，第八期，第九期，第十期。
+
+```ts
+export default defineUserConfig({
+    theme: defaultTheme({
+        sidebar: {
+            '/project/chatgpt-assistant/': [
+                {text: '项目介绍', link: '/project/chatgpt-assistant/'},
+                {text: '第八期 websocket+stream请求+proxy', link: '/project/chatgpt-assistant/chapter8/'},
+                {text: '第九期 Vue3/ElementUI Plus实现聊天面板', link: '/project/chatgpt-assistant/chapter9/'},
+                {text: '第十期 消息发送和markdown显示消息记录', link: '/project/chatgpt-assistant/chapter10/'}
+            ]
+        }
+    })
+})
+```
+
+如果你想把第八期和第九期何在一个目录下面，你可以这样。
+
+```ts
+'/project/chatgpt-assistant/'
+:
+[
+    {text: '项目介绍', link: '/project/chatgpt-assistant/'},
+    {
+        text: '第八期第九期',
+        children: ['/project/chatgpt-assistant/chapter8/', '/project/chatgpt-assistant/chapter9/']
+    },
+    {text: '第十期 消息发送和markdown显示消息记录', link: '/project/chatgpt-assistant/chapter10/'}
+]
+```
+
+效果如下
+
+<center>
+<img src="./img_3.png" width="600"/>
+
+图4 合并目录
+</center>
+可以看见第八期和第九期被合并了。
+
+### 配置导航栏
+
+#### 下拉菜单
+
+<center>
+<img src="./img_4.png" width="600"/>
+
+图5 下拉菜单
+</center>
+
+在导航栏中可以配置菜单，点击菜单就可以跳转到自己写的博客。下面演示配置下拉菜单。
+
+下面这个配置会在导航栏中多一个下拉菜单`工具分享`，该下路菜单里面又包含三个子菜单如图5所示。
+
+```ts
+export default defineUserConfig({
+
+    theme: defaultTheme({
+        navbar: [
+            {
+                text: '工具分享',
+                children: [
+                    {text: '私有ChatGPT搭建', link: '/tools/chatgpt/'},
+                    {text: '远程开发环境搭建', link: '/tools/remote-develop/'},
+                    {text: 'vue-press2搭建博客', link: '/tools/vue-press2/'},
+
+                ]
+            },
+        ],
+    })
+})
+```
+
+#### 下拉菜单分组
+
+<center>
+<img src="./img_5.png" width="600"/>
+
+图6 下拉菜单分组
+</center>
+要实现下拉菜单中分组，需要再嵌套一层菜单配置。
+
+下面的配置多了一个下拉菜单`知识分享`。知识分享中包含两个分组`spring boot技巧`和`jpa`
+。通过观察你可以发现没有link属性的菜单项配置就是下拉菜单或者分组了。像`知识分享`和`工具分享`
+这两个都没有link，又由于它们是位于第一层所以就被识别为下拉菜单。`spring boot技巧`和`jpa`两个菜单配置是属于子菜单且没有link属性，那它们就是分组菜单了。
+
+```ts
+export default defineUserConfig({
+
+    theme: defaultTheme({
+        navbar: [
+            {
+                text: '工具分享',
+                children: [
+                    {text: '私有ChatGPT搭建', link: '/tools/chatgpt/'},
+                    {text: '远程开发环境搭建', link: '/tools/remote-develop/'},
+                    {text: 'vue-press2搭建博客', link: '/tools/vue-press2/'},
+                ]
+            },
+            {
+                text: '知识分享',
+                children: [
+                    {
+                        text: 'spring boot技巧',
+                        children: [
+                            {text: 'aop', link: '/knowledge/spring/aop/'}, {
+                                text: '如何发送http请求各种参数',
+                                link: '/knowledge/spring/http/'
+                            }
+                        ]
+                    },
+                    {
+                        text: 'jpa',
+                        children: [
+                            {
+                                text: 'hibernate',
+                                link: '/knowledge/jpa/hibernate/'
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+    })
+})
+```
