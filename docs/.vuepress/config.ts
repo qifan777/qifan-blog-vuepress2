@@ -5,6 +5,8 @@ export default defineUserConfig({
     title: '起凡code闲聊',
     port: 8081,
     description: '起凡全栈项目分享',
+    base: '/blog/',
+    dest: 'docs/.vuepress/blog',
     theme: defaultTheme({
         logo: '/images/logo.jpg',
         navbar: [
@@ -69,6 +71,15 @@ export default defineUserConfig({
             '/knowledge/newland/': [
                 {text: '云边实体登记自动化', link: '/knowledge/newland/'},
                 {text: '脚本迁移登记自动化', link: '/knowledge/newland/script/'}
+            ],
+            '/knowledge/worker/': [
+                {text: '平台开发组工作', link: '/knowledge/worker/'},
+                {
+                    text: '一经开发工作',
+                    collapsible:true,
+                    children: [{text: '一经实体登记自动化', link: '/knowledge/worker/onebass/'},
+                        {text: '一经脚本迁移自动化', link: '/knowledge/worker/onebass/script/'}]
+                }
             ]
         }
     })
