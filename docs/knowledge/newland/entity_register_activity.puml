@@ -2,7 +2,7 @@
 (*)--> "从脚本中获取到需要登记的实体 "
 note right
 如果脚本内容过多提取出需要登记的实体很消耗精力，
-人无法长时间专注，也有可能出现漏掉。[[https://www.jarcheng.top/knowledge/newland/img.png 图片]]
+人无法长时间专注，也有可能出现漏掉。[[http://localhost:8081/@fs/D:\workplace\code\opensource\qifan-blog-vuepress2\docs\knowledge\newland\img.png 图片]]
 end note
 -->[实体列表] 从省内批量采集实体
 note right
@@ -10,11 +10,20 @@ note right
     网络卡顿很影响云桌面的操作。
 2. 采集的时候需要分不同的周期，月，日，无周期需要分开采集。采集完到资产
     管理中发布实体, 发布完还需要导出发布包，再通过邮件发送出去。
+[[http://localhost:8081/@fs/D:\workplace\code\opensource\qifan-blog-vuepress2\docs\knowledge\newland\img_2.png 图片]]]
 end note
 --> [发布包]云边导入发布包
 note right: 重新登录云边VPN和云边。
 --> === s1 ===
 --> 开始登记实体
+note right
+
+[[http://localhost:8081/@fs/D:\workplace\code\opensource\qifan-blog-vuepress2\docs\knowledge\newland\img_4.png 实体基本信息]]
+[[http://localhost:8081/@fs/D:\workplace\code\opensource\qifan-blog-vuepress2\docs\knowledge\newland\img_5.png 实体分区和HASH策略]]
+[[http://localhost:8081/@fs/D:\workplace\code\opensource\qifan-blog-vuepress2\docs\knowledge\newland\img_3.png 接口规范]]
+
+end note
+
 --> 填写业务口径
 note right: 去规范手册寻找该接口的业务描述。规范手册又有好几册，寻找起来较为费时。
 --> 填写技术口径
@@ -32,9 +41,4 @@ note right: 根据不同的统计日期建立不同的分区。
 
 @enduml
 
-docker run -d  --name nginx -p 443:443  --network=mynet --network-alias=nginx  \
- -v /home/nginx/html:/usr/share/nginx/html \
- -v /home/nginx/conf/nginx.conf:/etc/nginx/nginx.conf \
- -v /home/nginx/conf/conf.d:/etc/nginx/conf.d \
- -v /home/nginx/logs:/var/log/nginx \
- nginx
+
