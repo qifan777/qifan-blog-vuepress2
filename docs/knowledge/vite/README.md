@@ -1,3 +1,4 @@
+
 # vite
 
 以前的vue-cli是基于webpack，而webpack在开发阶段启动的速度是十分缓慢。原因是webpack会把一整个项目从入口开始（index.html）将涉及的所有的模块打包成一个js文件（图1）。
@@ -28,10 +29,12 @@ npm i vite
 ```
 在package.json中添加npm script
 ```json
-"scripts": {
-"dev": "vite",
-"build": "vite build",
-"preview": "vite preview"
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  }
 }
 ```
 ```json
@@ -42,7 +45,7 @@ npm i vite
     "preview": "vite preview"
   },
   "dependencies": {
-    "vite": "^4.4.9",
+    "vite": "^4.4.9"
   }
 }
 
@@ -57,20 +60,20 @@ npm i vite
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 </head>
 <script type="module">
-    
-import{showCurrentTime} from'./index.js'
 
-setInterval(()=>document.querySelector(".time").innerHTML=showCurrentTime(),1000)+''
+  import {showCurrentTime} from './index.js'
+
+  setInterval(() => document.querySelector(".time").innerHTML = showCurrentTime() + '', 1000)
 
 </script>
 
 <body>
-    <div>当前时间：<span class="time"></span></div>
+<div>当前时间：<span class="time"></span></div>
 </body>
 </html>
 ```

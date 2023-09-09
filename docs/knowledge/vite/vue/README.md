@@ -76,7 +76,7 @@ const counter=ref(0)
 
 <style scoped>
 
-</style
+</style>
 ```
 
 在main.js我们指定了入口组件返回了一个vue单页面应用实例。并将该组件挂载到index.html的#app元素上。
