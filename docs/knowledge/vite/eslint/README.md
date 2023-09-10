@@ -128,6 +128,7 @@ coverage
     "vue": "^3.3.4"
   },
   "devDependencies": {
+    "vite": "^4.4.9",
     "@vitejs/plugin-vue": "^4.3.4",
     "@rushstack/eslint-patch": "^1.3.3",
     "@vue/eslint-config-prettier": "^8.0.0",

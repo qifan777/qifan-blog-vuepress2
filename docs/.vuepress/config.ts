@@ -51,6 +51,10 @@ export default defineUserConfig({
                     {
                         text: "Nginx博客/网站搭建",
                         link: "/knowledge/website/"
+                    },
+                    {
+                        text: '前端工具链',
+                        link: "/knowledge/vite/"
                     }
                 ]
             }
@@ -79,6 +83,18 @@ export default defineUserConfig({
                     collapsible:true,
                     children: [{text: '一经实体登记自动化', link: '/knowledge/worker/onebass/'},
                         {text: '一经脚本迁移自动化', link: '/knowledge/worker/onebass/script/'}]
+                }
+            ],
+            '/knowledge/vite/':[
+                {text:'Vite',link:'/knowledge/vite/'},
+                {
+                    text:'Vue',link:'/knowledge/vite/vue',
+                },
+                {
+                    text:'ESLint',link:'/knowledge/vite/eslint',
+                },
+                {
+                    text:'TypeScript',link:'/knowledge/vite/typescript',
                 }
             ]
         }

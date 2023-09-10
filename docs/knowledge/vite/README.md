@@ -25,7 +25,7 @@
 ## 安装
 安装 vite 
 ```shell
-npm i vite
+npm i vite -D
 ```
 在package.json中添加npm script
 ```json
@@ -44,7 +44,7 @@ npm i vite
     "build": "vite build",
     "preview": "vite preview"
   },
-  "dependencies": {
+  "devDependencies": {
     "vite": "^4.4.9"
   }
 }
