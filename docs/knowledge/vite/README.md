@@ -96,7 +96,7 @@ export const showCurrentTime=()=>{
 执行 `npm run dev` 访问`http://localhost:5173`
 
 <center>
-<img src="img_1.png">
+<img src="./img_1.png">
 
 图4 效果图
 </center>

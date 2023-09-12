@@ -24,3 +24,8 @@ pnpm-debug.log*
 *.sln
 *.sw?
 /docs/.vuepress/blog/
+
+node_modules/
+blog/.vuepress/.cache/
+blog/.vuepress/.temp/
+blog/.vuepress/dist/
