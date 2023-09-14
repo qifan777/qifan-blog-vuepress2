@@ -1,4 +1,4 @@
-import { sidebar } from "vuepress-theme-hope";
+import {sidebar} from "vuepress-theme-hope";
 
 export default sidebar({
   "/": [
@@ -32,6 +32,7 @@ export default sidebar({
     {text: '第九期 Vue3/ElementUI Plus实现聊天面板', link: '/project/chatgpt-assistant/chapter9/'},
     {text: '第十期 消息发送和markdown显示消息记录', link: '/project/chatgpt-assistant/chapter10/'}
   ],
+  '/project/qifan-shop/': "structure",
   '/knowledge/newland/': [
     {text: '云边实体登记自动化', link: '/knowledge/newland/'},
     {text: '脚本迁移登记自动化', link: '/knowledge/newland/script/'}
@@ -40,21 +41,21 @@ export default sidebar({
     {text: '平台开发组工作', link: '/knowledge/worker/'},
     {
       text: '一经开发工作',
-      collapsible:true,
+      collapsible: true,
       children: [{text: '一经实体登记自动化', link: '/knowledge/worker/onebass/'},
         {text: '一经脚本迁移自动化', link: '/knowledge/worker/onebass/script/'}]
     }
   ],
-  '/knowledge/vite/':[
-    {text:'Vite',link:'/knowledge/vite/'},
+  '/knowledge/vite/': [
+    {text: 'Vite', link: '/knowledge/vite/'},
     {
-      text:'Vue',link:'/knowledge/vite/vue',
+      text: 'Vue', link: '/knowledge/vite/vue',
     },
     {
-      text:'ESLint',link:'/knowledge/vite/eslint',
+      text: 'ESLint', link: '/knowledge/vite/eslint',
     },
     {
-      text:'TypeScript',link:'/knowledge/vite/typescript',
+      text: 'TypeScript', link: '/knowledge/vite/typescript',
     }
   ]
 });

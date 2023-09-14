@@ -1,5 +1,3 @@
-sidebar: heading
-
 # 起凡小商店
 
 ## 前言
@@ -21,8 +19,7 @@ sidebar: heading
 ```vue
 
 <script lang="tsx">
-  import {ref} from "vue";
-  import {defineComponent} from "vue";
+  import {defineComponent, ref} from "vue";
 
   export default defineComponent({
     name: "User",
