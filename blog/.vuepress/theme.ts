@@ -15,11 +15,12 @@ export default hopeTheme({
 
   iconAssets: "fontawesome-with-brands",
 
-  logo: "/logo.svg",
+  logo: "/logo.jpg",
 
   repo: "qifan777/qifan-blog-vuepress2",
 
-  docsDir: "src",
+  docsDir: "blog",
+  docsBranch:"master",
 
   // navbar
   navbar,
@@ -27,7 +28,7 @@ export default hopeTheme({
   // sidebar
   sidebar,
 
-  footer: "默认页脚",
+  footer: "联系方式：ljc666max",
 
   displayFooter: true,
 
