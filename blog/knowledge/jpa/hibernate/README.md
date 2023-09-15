@@ -1,16 +1,10 @@
----
-sidebar: heading
----
-
-# Hibernate
-
-## 1. 领域模型（Domain Model）
+# 1. 领域模型（Domain Model）
 
 领域顾名思义，它指的是我们实际业务中一的一块业务也就是一个领域。对这个领域建模可能会有好几个相关联的类，他们都属于同一个领域。所以领域模型是比较范的概念，一般来说一个领域模型里面包含一个及以上的实体类（Entity），每个实体类都对应着数据库的一张表。
 
 领域模型是Hibernate的核心，Hibernate的所有功能都是围绕着领域模型。Hibernate提供了许多的注解方便我们来建立领域模型。
 
-### 1.1 Hibernate类型
+## 1.1 Hibernate类型
 
 Hibernate类型的主要功能是联系Java中的对象和数据库中的记录，并且可以将Java对象与数据库的记录互相转换。
 
@@ -24,23 +18,25 @@ Hibernate类型的主要功能是联系Java中的对象和数据库中的记录�
 
 ```sql
 -- 联系方式
-create table Contact (
-    id integer not null,
-    first varchar(255),
-    last varchar(255),
-    middle varchar(255),
-    notes varchar(255),
+create table Contact
+(
+    id      integer not null,
+    first   varchar(255),
+    last    varchar(255),
+    middle  varchar(255),
+    notes   varchar(255),
     starred boolean not null,
     website varchar(255),
     primary key (id)
 )
 -- 地址
-create table Address(
-    id integer not null,
-    province varchar(20),
-    city varchar(20),
-    district varchar(20),
-    details varchar(20),
+create table Address
+(
+    id         integer not null,
+    province   varchar(20),
+    city       varchar(20),
+    district   varchar(20),
+    details    varchar(20),
     contact_id integer not null,
     primary key (id)
 )
@@ -52,17 +48,18 @@ create table Address(
 @Entity(name = "Address")
 @Data
 public class Address {
-    @Id
-    private Long id;
 
-    // @Basic可加可不加。用来标识该字段是基本类型
-    private String province;
+  @Id
+  private Long id;
 
-    private String city;
+  // @Basic可加可不加。用来标识该字段是基本类型
+  private String province;
 
-    private String district;
+  private String city;
 
-    private String details;
+  private String district;
+
+  private String details;
 }   
 ```
 
@@ -76,38 +73,38 @@ public class Address {
 @Data
 public class Contact {
 
-    @Id
-    private Integer id;
+  @Id
+  private Integer id;
 
-    // 表明该字段为嵌套类型
-    @Embedded
-    private Name name;
+  // 表明该字段为嵌套类型
+  @Embedded
+  private Name name;
 
-    private String notes;
+  private String notes;
 
-    private URL website;
+  private URL website;
 
-    private boolean starred;
+  private boolean starred;
 
-    @OneToOne
-    @JoinColumn(name = "address_id")
-    private Address address;
+  @OneToOne
+  @JoinColumn(name = "address_id")
+  private Address address;
 }
+
 // 表明该类为嵌套类型
 @Embeddable
 @Data
 class Name {
-    // 这边属性名称和表的字段名称不一样，需要手动指定。
-    @Column(name = "first")
-    private String firstName;
-    @Column(name = "middle")
-    private String middleName;
-    @Column(name = "last")
-    private String lastName;
+
+  // 这边属性名称和表的字段名称不一样，需要手动指定。
+  @Column(name = "first")
+  private String firstName;
+  @Column(name = "middle")
+  private String middleName;
+  @Column(name = "last")
+  private String lastName;
 }
 ```
-
-
 
 上述的领域模型可以发现以下这些Hibernate类型
 
@@ -119,7 +116,7 @@ class Name {
 
 上面的这些Hibernate类型又分为两大类`值类型`和`实体类型`
 
-#### 1.1.1 值类型(Value Type)
+### 1.1.1 值类型(Value Type)
 
 值类型是那些和实体类紧密关联，描述了实体状态的字段。
 
@@ -133,7 +130,7 @@ class Name {
 
 - 集合类型，虽然前面没提到，但是偶尔也会用到。
 
-#### 1.1.2 实体类型（Entity Type）
+### 1.1.2 实体类型（Entity Type）
 
 实体类型描述了Java简单对象（POJO）类与数据库之间的映射关系。通过`@Entity`来标识。
 
@@ -141,7 +138,7 @@ class Name {
 
 实体类和Java简单对象（POJO）类最大的区别那就是实体类是由对应的数据库表，而普通java类型没有。
 
-### 1.2 基本类型
+## 1.2 基本类型
 
 与基本类型搭配使用的注解：
 
@@ -170,30 +167,31 @@ class Name {
 
 下面详细介绍上述表格中的部分类型。
 
-#### 1.2.1 枚举类型
+### 1.2.1 枚举类型
 
 ```java
 public enum PhoneType {
-    LAND_LINE,
-    MOBILE;
+  LAND_LINE,
+  MOBILE;
 }
 ```
 
 ***@Enumerated(ORDINAL)***
 
 ```java
+
 @Entity(name = "Phone")
 public static class Phone {
 
-	@Id
-	private Long id;
+  @Id
+  private Long id;
 
-	@Column(name = "phone_number")
-	private String number;
+  @Column(name = "phone_number")
+  private String number;
 
-	@Enumerated(EnumType.ORDINAL)
-	@Column(name = "phone_type")
-	private PhoneType type;
+  @Enumerated(EnumType.ORDINAL)
+  @Column(name = "phone_type")
+  private PhoneType type;
 }
 ```
 
@@ -201,7 +199,7 @@ public static class Phone {
 可以看见`PhoneType.MOBILE` 映射到 `1`。@Enumerated(EnumType.ORDINAL)指定枚举到数据库的映射规则是按顺序。MOBILE在PhoneType中的顺序是1，所以就得到了1。
 
 ```java
-Phone phone = new Phone();
+Phone phone=new Phone();
 phone.setId(1L);
 phone.setNumber("123-456-78990");
 phone.setType(PhoneType.MOBILE);
@@ -220,9 +218,9 @@ VALUES ('123-456-78990', 1, 1)
 在属性上加上`@Enumerated(STRING)`
 
 ```java
-	@Enumerated(EnumType.STRING)
-	@Column(name = "phone_type")
-	private PhoneType type;
+@Enumerated(EnumType.STRING)
+@Column(name = "phone_type")
+private PhoneType type;
 ```
 
 插入上面的例子到数据库，会生成下面的sql语句
@@ -234,7 +232,7 @@ VALUES ('123-456-78990', 'MOBILE', 1)
 
 `PhoneType.MOBILE`变成了`'MOBILE'`字符串。
 
-#### 1.2.2 Boolean
+### 1.2.2 Boolean
 
 默认情况下，Java的Boolean映射到数据库的类型是`BIT`、`TINYINT`。
 
@@ -258,7 +256,7 @@ boolean convertedTrueFalse;
 boolean convertedNumeric;
 ```
 
-#### 1.2.3 Date/Time
+### 1.2.3 Date/Time
 
 在SQL里面定义了三个标准的日期类型
 
@@ -323,51 +321,53 @@ private Date timestamp;
 private LocalDateTime timestamp;
 ```
 
-#### 1.2.4 自定义映射规则
+### 1.2.4 自定义映射规则
 
 ```java
 public enum UserType {
-    PERSON(1, "个人"),
-    ENTERPRISE(2, "企业");
-    private final Integer code;
-    private final String name;
+  PERSON(1, "个人"),
+  ENTERPRISE(2, "企业");
+  private final Integer code;
+  private final String name;
 
-    UserType(Integer code, String name) {
-        this.code = code;
-        this.name = name;
-    }
+  UserType(Integer code, String name) {
+    this.code = code;
+    this.name = name;
+  }
 
-    public Integer getCode() {
-        return code;
-    }
+  public Integer getCode() {
+    return code;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public static UserType nameOf(String name) {
-        return Arrays.stream(UserType.values()).filter(userType -> userType.getName().equals(name))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("枚举不存在"));
-    }
+  public static UserType nameOf(String name) {
+    return Arrays.stream(UserType.values()).filter(userType -> userType.getName().equals(name))
+        .findFirst()
+        .orElseThrow(() -> new RuntimeException("枚举不存在"));
+  }
 }
 ```
 
 ```java
+
 @Entity(name = "user")
 @Data
 @Accessors(chain = true)
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
 
-    private String name;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "id", nullable = false)
+  private Long id;
 
-    private LocalDateTime createTime;
+  private String name;
 
-    private UserType userType;
+  private LocalDateTime createTime;
+
+  private UserType userType;
 }
 ```
 
@@ -379,15 +379,16 @@ public class User {
 
 ```java
 public class UserTypeConverter implements AttributeConverter<UserType, String> {
-    @Override
-    public String convertToDatabaseColumn(UserType attribute) {
-        return attribute.getName();
-    }
 
-    @Override
-    public UserType convertToEntityAttribute(String dbData) {
-        return UserType.nameOf(dbData);
-    }
+  @Override
+  public String convertToDatabaseColumn(UserType attribute) {
+    return attribute.getName();
+  }
+
+  @Override
+  public UserType convertToEntityAttribute(String dbData) {
+    return UserType.nameOf(dbData);
+  }
 }
 ```
 
@@ -402,24 +403,24 @@ private UserType userType;
 
 ```java
 User user = new User()
-        .setName("起凡")
-        .setCreateTime(LocalDateTime.now())
-        .setUserType(UserType.PERSON);
+.setName("起凡")
+.setCreateTime(LocalDateTime.now())
+.setUserType(UserType.PERSON);
 // 将UserType.PERSON 转成 字符串
 // insert into user (create_time, name, user_type) values (2022-12-04 11:38:46, '起凡', '个人')
 userRepository.save(user);
 
 userRepository.findUserByNameIs("起凡")
-        .ifPresent(res -> {
-            // 在数据库从字符串变成 UserType.PERSON。
-            log.info(res.getUserType()
-                    .getCode()
-                    .toString());
-            // 结果是：1。
-        });
+.ifPresent(res-> {
+// 在数据库从字符串变成 UserType.PERSON。
+   log.info(res.getUserType()
+   .getCode()
+   .toString());
+// 结果是：1。
+});
 ```
 
-### 1.3 嵌套类型
+## 1.3 嵌套类型
 
 在前面的领域建模中，我们使用到了值类型中的嵌套类型。嵌套类型一般是对几个实体类都公用的属性进行包装方便复用，或者是几个属性属于同一个概念把它们放到一个类里面使得语义清晰。
 
@@ -432,60 +433,98 @@ userRepository.findUserByNameIs("起凡")
 *简单的嵌套类型案例*
 
 ```java
+
 @Entity(name = "Book")
 public static class Book {
 
-	@Id
-	@GeneratedValue
-	private Long id;
+  @Id
+  @GeneratedValue
+  private Long id;
 
-	private String title;
+  private String title;
 
-	private String author;
+  private String author;
 
-	private Publisher publisher;
+  private Publisher publisher;
 }
 
 @Embeddable
 public static class Publisher {
 
-	@Column(name = "publisher_name")
-	private String name;
+  @Column(name = "publisher_name")
+  private String name;
 
-	@Column(name = "publisher_country")
-	private String country;
+  @Column(name = "publisher_country")
+  private String country;
 
 }
 ```
 
 ```sql
-create table Book (
-    id bigint not null,
-    author varchar(255),
+create table Book
+(
+    id                bigint not null,
+    author            varchar(255),
     publisher_country varchar(255),
-    publisher_name varchar(255),
-    title varchar(255),
+    publisher_name    varchar(255),
+    title             varchar(255),
     primary key (id)
 )
 ```
 
 Publisher嵌套类是Book的一部分。生成sql语句时，可以看见Book表中也有`publisher_country` `publisher_name`，而不是再生成一个Publisher表。
 
-### 1.4 主键
+## 1.4 实体类型
 
-#### 1.4.1 简单主键
+Hibernate里面实体类有下面几个要求
 
-**@ID** 
+- 实体类上需要添加`@Entity`注解
+- 实体类必须有一个public或者protected的无参构造器
+- 接口和枚举不能成为实体类
+- 实体类不能是final，里面的映射字段也不能是final。
+- 实体类可以是抽象类（abstract），实体类可以继承抽象类实体。
+- 实体类的每个映射字段都需要有getter/setter
+
+### 1.4.1 映射实体类
+
+定义一个实体类第一件事就是添加`@Entity(name="选填，默认和类名相同")`。默认情况实体类的名字和你数据库的表名相同,如果你想指定表名可以使用`@Table(name="xxx")`。
+确定好映射的表名后，你需要确定[主键]((#_1-5-主键))并且在主键字段上用`@Id`标识，如果是多个主键请参考[组合组件](#_1-5-2-组合主键)。
+最后将类中的属性映射到表中的字段，根据属性的类型选择合适的[值类型](#_1-1-1-值类型-value-type)
+
+```java
+// 总结，首先查找是否存在@Table(name="Book_1")，若存在则映射到Book_1表。
+// 其次，@Entity(name="Book_2")，若@Entity有指定实体类名称，则映射到Book_2表
+// 最后，@Entity，若@Entity没有指定名称，则默认映射到类名即Book表。
+@Entity
+public class Book {
+
+  @Id
+  private Long id;
+
+  private String title;
+
+  private String author;
+
+  //Getters and setters are omitted for brevity
+}
+```
+
+## 1.5 主键
+
+### 1.5.1 简单主键
+
+**@ID**
 
 每个实体类都需要有一个@Id注解来标识注解，或者实体类的父类是`mapped superclass`且也有@id。
 
-> @Id只能作用在基础类型或者基础类型的包装类 *java.lang.String*; *java.util.Date*; *java.sql.Date*; *java.math.BigDecimal*;
+> @Id只能作用在基础类型或者基础类型的包装类 *java.lang.String*; *java.util.Date*; *java.sql.Date*;
+*java.math.BigDecimal*;
 
 
 
 **@GeneratedValue**
 
- GeneratedValue提供了生成主键的规范，只能作用于有`@Id`标识的属性（类型是基本类型）。当插入实体类到数据库时会自动根据策略填充实体类的主键。
+GeneratedValue提供了生成主键的规范，只能作用于有`@Id`标识的属性（类型是基本类型）。当插入实体类到数据库时会自动根据策略填充实体类的主键。
 
 GenerationType定义了3种主键生成类型。
 
@@ -505,346 +544,199 @@ public enum GenerationType { TABLE, SEQUENCE, IDENTITY, AUTO };
 
    为插入的每条记录生成一个唯一的标识id，数据库层面支持（Oracle，SQL Server），部分数据库不支持（Mysql）。
 
-#### 1.4.2 组合主键
+### 1.5.2 组合主键
 
 *简单的组合主键例子*
 
 ```java
+
 @Entity
 public class Employee {
-    @Id long empId;
-    String empName;
-    // ...
+
+  @Id
+  long empId;
+  String empName;
+  // ...
 }
 ```
 
 ```java
 public class DependentId {
-    String name; // 和 Dependent中@Id String name 相对于。必须同类型且同名。
-    long emp; // Dependent 中的 emp名字相同。Dependent中的emp用@ManyToOne注解，这边的emp类型必须和Employee的id同类型。 
+
+  String name; // 和 Dependent中@Id String name 相对于。必须同类型且同名。
+  long emp; // Dependent 中的 emp名字相同。Dependent中的emp用@ManyToOne注解，这边的emp类型必须和Employee的id同类型。 
 }
 
 @Entity
 // 使用@组合id
 @IdClass(DependentId.class)
 public class Dependent {
-    // 和 DependentId中的name相匹配
-    @Id String name;
-    
-    // 和 DependentId中的emp相匹配
-    @Id @ManyToOne
-    Employee emp;
 
-    // ...
+  // 和 DependentId中的name相匹配
+  @Id
+  String name;
+
+  // 和 DependentId中的emp相匹配
+  @Id
+  @ManyToOne
+  Employee emp;
+
+  // ...
 }
 ```
 
+## 关联
 
+基本概念：
 
-## 4. 抓取数据（Fetch）
+- 父实体（parent）- 关系反方（inverse side）
+- 子实体（child）- 关系拥有方（owning side）
 
-在查询的时候返回太多的数据对于 JDBC 传输数据和 ResultSet 处理过程都是不必要的开销，抓取太少的数据会导致执行额外的查询语句也降低了执行效率。所以说调节数据抓取的深度和广度对应用的性能影响是是很大的。
+Person拥有多个Phone，Phone对应一个Person。Person和Phone之间，Person是父实体，Phone是子实体。由于外键person_id是在Phone中，所以子实体又是关系的拥有方（owning side），父实体是关系的相反方（inverse side）。
 
-### 4.1 基础概念
+### @ManyToOne
 
-抓取数据本身的概念可以将抓取数据产生的问题分成两种问题。
+多对一是最常见的关系，`@ManyToOne`直接映射到数据库的外键，它建立起了子实体（Child）和父实体（Parent）之间的联系。
 
-- 数据什么时候会被抓取？提前（`EAGER`）还是稍后（`LAZY`）
-
-- 数据应该被怎么抓取
-
-> 提前（eager）：在查询的同时返回所需要的数据
->
-> 稍后（lazy）：在需要用到该数据时，再自动调用查询去获取数据。
->
-> 如果百分白确定数据是一定是会被使用的，使用eager策略。如果是可能会使用则lazy。
-
-
-
-下面有几个范围（scope）用来定义抓取数据的行为
-
-
-
-***静态（static）***
-
-静态定义的抓取策略是在数据映射过程执行的，静态策略是在没有动态策略情况下的备用策略。
-
-​	**SELECT**
-
-​	执行额外的SQL去抓取数据，这种行为可以是 `EAGER`（立即发送一条SQL去抓取数据），也可以是`LAZY`（在数据被访问的时候再发送一条SQL去抓取数据）.  这种策略通常称为 `N+1`。
-
-​	**JOIN**
-
-​	这种策略是只能是`EAGER`。数据会在通过 OUT JOIN 抓取，所以这种方式只需要执行一条sql语句效率较高。
-
-​	**BATCH**
-
-​	执行额外的SQL去加载一些相关的数据通过 IN （:ids）来限制。和`SELECT`一样也分为 `EAGER`和`LAZY`
-
-​	**SUBSELECT**
-
-​	执行额外的SQL加载关联的数据。和`SELECT`一样也分为 `EAGER`和`LAZY`
-
-***动态（dynamic）***
-
-> 动态加载：在运行时选择需要加载的数据
-
-​	
-
-​	**fetch profiles**
-
-​	在实体类的映射上面定义，但是可以在执行查询的时候选择启用或者禁用。
-
-​	**JPQL / Criteria** 
-
-​	JPQL 是JPA规范的查询语句 和 JPA Criteria （JPQL的Java版本）都可以在查询的时候指定要抓取的数据。
-
-​	**entity graph**
-
-​	使用 JPA EntityGraphs
-
-### 4.2 直接抓取和实体查询
-
-要了解直接抓取数据和实体查询在提前地抓（`eagerly`）取关联数据上的区别，可以看下面这个例子。
+*@ManyToOne*案例
 
 ```java
-@Entity(name = "Department")
-public static class Department {
 
-	@Id
-	private Long id;
+@Entity(name = "Person")
+public static class Person {
 
-	//Getters and setters omitted for brevity
+  @Id
+  @GeneratedValue
+  private Long id;
+
+  //Getters and setters are omitted for brevity
+
 }
 
-@Entity(name = "Employee")
-public static class Employee {
+@Entity(name = "Phone")
+public static class Phone {
+
+  @Id
+  @GeneratedValue
+  private Long id;
+
+  @Column(name = "`number`")
+  private String number;
+
+  @ManyToOne
+  @JoinColumn(name = "person_id")
+  private Person person;
+
+  //Getters and setters are omitted for brevity
+
+}
+```
+
+关联phone和person
+
+```java
+// 新增Person记录
+Person person=new Person();
+entityManager.persist(person);
+
+Phone phone=new Phone("123-456-7890");
+// 将phone关联已存在的person
+phone.setPerson(person);
+// 插入到数据库
+entityManager.persist(phone);
+entityManager.flush();
+phone.setPerson(null);
+entityManager.persist(phone);
+entityManager.flush();
+```
+
+生成对应的SQL
+
+```sql
+INSERT INTO Person (id)
+VALUES (1)
+    INSERT
+INTO Phone (number, person_id, id)
+VALUES ( '123-456-7890', 1, 2 )
+
+UPDATE Phone
+SET number    = '123-456-7890',
+    person_id = NULL
+WHERE id = 2
+```
+
+### @OneToMany
+
+之前说了Person可以关联多个Phone。可以使用`@OneToMany`来管理所有的子实体。
+在使用`@OneToMany`时有两种情况第一种情况是子实体没有`@ManyToOne`，这种情况`@OneToMany`建立起的关联是`unidirectional`。第二种情况是子实体一方有`@ManyToOne`此时建立起的联系`bidirectional`.
+
+在使用时强烈建议不要用`unidirectional`的关联。
+
+*@OneToMany bidirectional例子*
+
+bidirectional @OneToMany顾名思义它需要同时存在`owning side`和`inverse（mappedBy） side`。
+
+```java
+@Entity(name = "Person")
+public static class Person {
 
 	@Id
+	@GeneratedValue
 	private Long id;
+	// mappedBy的意思是子实体通过person关联到父实体，这样就可以知道子实体的外键字段是什么。left join phone t on t.person_id = id。 
+	// 在关联中只有父实体可以级联更新/删除/创建子实体，反之不行。CascadeType.ALL就是代表级联触发所有的操作。
+	//
+	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Phone> phones = new ArrayList<>();
 
+	//Getters and setters are omitted for brevity
+
+	public void addPhone(Phone phone) {
+		phones.add(phone);
+		phone.setPerson(this);
+	}
+
+	public void removePhone(Phone phone) {
+		phones.remove(phone);
+		phone.setPerson(null);
+	}
+}
+
+@Entity(name = "Phone")
+public static class Phone {
+
+	@Id
+	@GeneratedValue
+	private Long id;
+	// 手机号在生活中不会重复，这种属于自然id，也可以唯一标识一行记录
 	@NaturalId
-	private String username;
+	@Column(name = "`number`", unique = true)
+	private String number;
+	
+	// 可以不写@JoinColumn，默认会以person_id作为外键。
+	// 关联父实体
+	@ManyToOne
+	private Person person;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	private Department department;
+	//Getters and setters are omitted for brevity
 
-	//Getters and setters omitted for brevity
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Phone phone = (Phone) o;
+		return Objects.equals(number, phone.number);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(number);
+	}
 }
 ```
 
-`Employee`拥有和`Department`的`@ManyToOne`关联并且是提前抓取该关联。
-
-*直接抓取例子*
-
-```java
-Employee employee = entityManager.find(Employee.class, 1L);
-```
-
-```sql
--- 生成的sql
-select
-    e.id as id1_1_0_,
-    e.department_id as departme3_1_0_,
-    e.username as username2_1_0_,
-    d.id as id1_0_1_
-from
-    Employee e
-left outer join
-    Department d
-        on e.department_id=d.id
-where
-    e.id = 1
-```
-
-可以看见，直接抓取通过 out join 加载了关联的数据。原因是因为`Employee`配置了`	@ManyToOne(fetch = FetchType.EAGER)`，意味着需要在查找`Employee`的同时也把`Department`加载出来。
-
-*实体查询例子*
-
-```java
-Employee employee = entityManager.createQuery(
-		"select e " +
-		"from Employee e " +
-		"where e.id = :id", Employee.class)
-.setParameter("id", 1L)
-.getSingleResult();
-```
-
-```sql
--- 生成的sql
-select
-    e.id as id1_1_,
-    e.department_id as departme3_1_,
-    e.username as username2_1_
-from
-    Employee e
-where
-    e.id = 1
-
-select
-    d.id as id1_0_0_
-from
-    Department d
-where
-    d.id = 1
-```
-
-可以看见一共生成了两条sql，原因是在查询的时候没有加载`Department`，而在`Employee`中又配置了它需要`Department`。所以Hibernate通过再生成一条sql查询来保证`@ManyToOne(fetch = FetchType.EAGER)`，同时又不影响第一条的sql语句。
-
-> 上面的例子提醒了我们，如果我们在关联上配置了 `fetch = FetchType.EAGER` 那么我们在写实体查询的时候就要使用`join fetch`去将配置了上诉注解的关联加载出来。要不然就会出现`N+1`的性能问题，生成了额外的查询语句。
-
-### 4.3 不抓取数据
-
-```java
-	@Entity(name = "Department")
-	public static class Department {
-
-		@Id
-		private Long id;
-
-		@OneToMany(mappedBy = "department")
-		private List<Employee> employees = new ArrayList<>();
-
-		//Getters and setters omitted for brevity
-	}
-
-	@Entity(name = "Employee")
-	public static class Employee {
-
-		@Id
-		private Long id;
-
-		@NaturalId
-		private String username;
-
-		@Column(name = "pswd")
-		@ColumnTransformer(
-			read = "decrypt('AES', '00', pswd )",
-			write = "encrypt('AES', '00', ?)"
-		)
-		private String password;
-
-		private int accessLevel;
-
-		@ManyToOne(fetch = FetchType.LAZY)
-		private Department department;
-
-		@ManyToMany(mappedBy = "employees")
-		private List<Project> projects = new ArrayList<>();
-
-		//Getters and setters omitted for brevity
-	}
-
-	@Entity(name = "Project")
-	public class Project {
-
-		@Id
-		private Long id;
-
-		@ManyToMany
-		private List<Employee> employees = new ArrayList<>();
-
-		//Getters and setters omitted for brevity
-	}
-```
-
-
-
-对于登录这个场景，我们只需要`Employee`的 username 和 password，并不需要`Project`也不需要`Department`的信息。
-
-针对这种情况，我们可以在关联的上配置`fetch = FetchType.LAZY`，但是我们发现为什么`@ManyToMany`没有配置`fetch = FetchType.LAZY`。那是因为 JPA规定了`@OneToOne` 和`@ManyToOne`默认是`fetch = FetchType.EAGER`，而其他的关联默认是`LAZY`。也可以说，如果关联的是一个集合（Collection），那么这个关系就是懒加载。`@OneToMany`和`@ManyToOne`都是作用在关联实体集合上所以说它们是懒加载。
-
-```java
-Employee employee = entityManager.createQuery(
-	"select e " +
-	"from Employee e " +
-	"where " +
-	"	e.username = :username and " +
-	"	e.password = :password",
-	Employee.class)
-.setParameter("username", username)
-.setParameter("password", password)
-.getSingleResult();
-```
-
-现在上面的实体查询就不会触发额外的sql语句，只会从`Employee`中获取数据。
-
-### 4.4 动态抓取
-
-第二种场景，页面上需要显示`Employee`的`Projects`，但是不需要显示`Department`。所以我们需要加载`Employee`和它关联的`Projects`
-
-#### 4.4.1 通过查询动态抓取
-
-***通过 JPQL 动态抓取***
-
-```java
-// left join fetch 取得关联的数据
-Employee employee = entityManager.createQuery(
-	"select e " +
-	"from Employee e " +
-	"left join fetch e.projects " +
-	"where " +
-	"	e.username = :username and " +
-	"	e.password = :password",
-	Employee.class)
-.setParameter("username", username)
-.setParameter("password", password)
-.getSingleResult();
-```
-
-***通过 JPA Criteria动态抓取***
-
-```java
-CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-CriteriaQuery<Employee> query = builder.createQuery(Employee.class);
-Root<Employee> root = query.from(Employee.class);
-// fetch 取得 projects数据
-root.fetch("projects", JoinType.LEFT);
-query.select(root).where(
-	builder.and(
-		builder.equal(root.get("username"), username),
-		builder.equal(root.get("password"), password)
-	)
-);
-Employee employee = entityManager.createQuery(query).getSingleResult();
-```
-
-上面两个案例表单意思是一样的，写法不同。都是 JPA 规定的查询语法分表叫`JPQL` 和`Criteria Api `。通过`fetch`可以取得所需的数据，在查询的同时会生成 out join 去加载相关联的数据。通过上面这种方法动态加载，只需要一条sql语句就可以获取所需的数据。
-
-#### 4.4.2 通过EntityGraph动态抓取
-
-JPA还支持通过一种叫`EntityGraphs`的特性来动态加载数据。通过这种方式可以更加精细化的来控制加载数据。它有两种模式可以选择
-
-​	**fetch mode**
-
-​	在`EntityGraph`中指定的所有关系都需要提前加载，没有指定的其他关系在都认为是懒加载。
-
-​	**load graph**
-
-​	在`EntityGraph`中指定的所有关系都需要提前加载，没有指定的其他关系按照静态（参考4.1）策略。
-
-
-
-下面定义一个基础的`EntityGraph`
-
-```java
-@Entity(name = "Employee")
-@NamedEntityGraph(name = "employee.projects",
-	attributeNodes = @NamedAttributeNode("projects")
-)
-```
-
-```java
-// 查询的时候使用EntityGraph
-Employee employee = entityManager.find(
-	Employee.class,
-	userId,
-	Collections.singletonMap(
-		"jakarta.persistence.fetchgraph",
-		entityManager.getEntityGraph("employee.projects")
-	)
-);
-```
-
-> 如果你想对关联的实体类嵌套定义`EntityGraph`可以使用`@NamedSubgraph`。
 

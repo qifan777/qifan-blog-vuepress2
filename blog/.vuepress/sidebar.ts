@@ -1,25 +1,6 @@
 import {sidebar} from "vuepress-theme-hope";
 
 export default sidebar({
-  "/": [
-    "",
-    {
-      text: "如何使用",
-      icon: "laptop-code",
-      prefix: "demo/",
-      link: "demo/",
-      children: "structure",
-    },
-    {
-      text: "文章",
-      icon: "book",
-      prefix: "posts/",
-      children: "structure",
-    },
-    "intro",
-    "slides",
-  ],
-
   '/project/post-letter/': [
     {text: '飞鸽邮筒', link: '/project/post-letter/'},
     {text: '后端介绍', link: '/project/post-letter/springboot/'},
@@ -57,5 +38,6 @@ export default sidebar({
     {
       text: 'TypeScript', link: '/knowledge/vite/typescript',
     }
-  ]
+  ],
+  '/knowledge/jpa/hibernate':'structure'
 });
