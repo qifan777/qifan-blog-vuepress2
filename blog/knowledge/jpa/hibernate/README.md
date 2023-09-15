@@ -585,7 +585,7 @@ public class Dependent {
 }
 ```
 
-## 关联
+## 1.7 关联
 
 基本概念：
 
@@ -667,14 +667,32 @@ WHERE id = 2
 
 ### @OneToMany
 
-之前说了Person可以关联多个Phone。可以使用`@OneToMany`来管理所有的子实体。
-在使用`@OneToMany`时有两种情况第一种情况是子实体没有`@ManyToOne`，这种情况`@OneToMany`建立起的关联是`unidirectional`。第二种情况是子实体一方有`@ManyToOne`此时建立起的联系`bidirectional`.
+之前说了Person可以关联多个Phone。可以使用`@OneToMany`来管理所有的子实体。 在使用`@OneToMany`时有两种情况：
 
-在使用时强烈建议不要用`unidirectional`的关联。
+- 第一种情况是子实体有`@ManyToOne`此时建立起的联系`bidirectional`.
+- 第二种情况是子实体没有`@ManyToOne`，这种情况`@OneToMany`建立起的关联是`unidirectional`。（建议不要使用这种关联）
+
+需要注意的是，外键只在`@ManyToOne`的一方，`@OneToMany`的一方不存在外键。
 
 *@OneToMany bidirectional例子*
 
-bidirectional @OneToMany顾名思义它需要同时存在`owning side`和`inverse（mappedBy） side`。
+bidirectional @OneToMany 顾名思义它需要同时存在`owning side`（子实体@ManyToOne）和`inverse（mappedBy） side`（父实体OneToMany）。
+
+::: tip
+
+```java
+ @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+```
+
+- mappedBy：的意思是子实体通过person关联到父实体，这样就可以知道子实体的外键字段是什么。正如我们手写sql一样，如果需要查询Person拥有的Phone显然需要知道Phone里面的外键是这么。
+
+```sql
+select * from person t1 left join phone t2 on t1.id=t2.person_id --外键 person_id
+```
+
+- cascade：CascadeType.ALL就是代表级联触发所有的操作。在关联中只有父实体可以级联更新/删除/创建子实体，反之不行。
+- orphanRemoval：的意思是当你更改phones数组内的Phone后，保存到数据库数据库也会删除掉子实体。参考下面的案例就理解了。
+  :::
 
 ```java
 @Entity(name = "Person")
@@ -737,6 +755,41 @@ public static class Phone {
 		return Objects.hash(number);
 	}
 }
+```
+
+将两个phone和person关联，并一起插入到数据库。随后删除其中一个phone和person的关联。
+
+```java
+Person person = new Person();
+Phone phone1 = new Phone("123-456-7890");
+Phone phone2 = new Phone("321-654-0987");
+// 项数组内增加phone，当将person插入到数据库时会触发级联操作CascadeType.ALL将phones也一起插入到数据库
+person.addPhone(phone1);
+person.addPhone(phone2);
+entityManager.persist(person);
+entityManager.flush();
+
+// 数组内删除了phone1，由于配置了orphanRemoval，所以更新person时会触发删除操作。
+person.removePhone(phone1);
+entityManager.persist(person);
+entityManager.flush();
+```
+
+```sql
+INSERT INTO Person
+       ( id )
+VALUES ( 1 )
+
+INSERT INTO Phone
+       ( "number", person_id, id )
+VALUES ( '123-456-7890', 1, 2 )
+
+INSERT INTO Phone
+       ( "number", person_id, id )
+VALUES ( '321-654-0987', 1, 3 )
+
+DELETE FROM Phone
+WHERE  id = 2
 ```
 
 
