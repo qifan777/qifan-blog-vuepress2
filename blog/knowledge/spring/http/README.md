@@ -1,7 +1,21 @@
 ---
 sidebar: heading
+category:
+  - idea技巧
+tag:
+  - http
+  - spring boot
+  - idea
+date: 2021-10-01
+timeline: true
 ---
+
+利用Idea的HttpClient向SpringBoot发起各种请求参数。后端使用`@RequestParam`，`@ModelAttribute`，`@PathVariable`，`@RequestBody`，`@RequestPart`去接收。
+
+<!-- more -->
+
 # HTTP各种参数发送
+
 ## 1. spring mvc 中的参数接受之 GET 请求
 
 Get 请求是没有 body 的，参数都是放在 url 上面。

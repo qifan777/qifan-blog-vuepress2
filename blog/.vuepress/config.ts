@@ -9,7 +9,6 @@ export default defineUserConfig({
     description: "起凡Code闲聊",
 
     theme,
-
     // Enable it with pwa
     // shouldPrefetch: false,
 });

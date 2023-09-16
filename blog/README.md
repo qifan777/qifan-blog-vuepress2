@@ -1,42 +1,28 @@
 ---
 home: true
-#layout: BlogHome
+layout: BlogHome
 icon: home
 title: 博客主页
 heroImage: /logo.jpg
 heroText: 起凡code闲聊
 heroFullScreen: true
-tagline: 全栈项目分享，实战干货。   
+tagline: 全栈项目分享，实战干货。
 projects:
-  - icon: project
+  - icon: /assets/icon/post-letter.png
     name: 飞鸽邮筒
-    desc: 项目详细描述
+    desc: 商品/购物车/订单/寄信/小程序
     link: /project/post-letter/
 
-  - icon: link
-    name: 链接名称
-    desc: 链接详细描述
-    link: https://链接地址
+  - icon: /assets/icon/openai.png
+    name: ChatGPT二次开发实战
+    desc: spring websocket/stream 请求/markdown/vue3
+    link: /project/chatgpt-assistant/
 
-  - icon: book
-    name: 书籍名称
-    desc: 书籍详细描述
-    link: https://你的书籍链接
+  - icon: project
+    name: 多模块微服务实战
+    desc: 用maven构建多模块的项目，每个项目采用六边形领域驱动架构。最后用docker部署
+    link: /project/microservice-practice/book.html
 
-  - icon: article
-    name: 文章名称
-    desc: 文章详细描述
-    link: https://你的文章链接
-
-  - icon: friend
-    name: 伙伴名称
-    desc: 伙伴详细介绍
-    link: https://你的伙伴链接
-
-  - icon: /logo.svg
-    name: 自定义项目
-    desc: 自定义详细介绍
-    link: https://你的自定义链接
 
 footer: 联系方式：ljc666max
 ---

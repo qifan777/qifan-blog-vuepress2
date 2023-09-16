@@ -1,4 +1,4 @@
-# 4. 抓取数据（Fetch）
+# 2. 抓取数据（Fetch）
 
 在查询的时候返回太多的数据对于 JDBC 传输数据和 ResultSet 处理过程都是不必要的开销，抓取太少的数据会导致执行额外的查询语句也降低了执行效率。所以说调节数据抓取的深度和广度对应用的性能影响是是很大的。
 
@@ -20,27 +20,25 @@
 
 下面有几个范围（scope）用来定义抓取数据的行为
 
-
-
 ***静态（static）***
 
 静态定义的抓取策略是在数据映射过程执行的，静态策略是在没有动态策略情况下的备用策略。
 
-​	**SELECT**
+​    **SELECT**
 
-​	执行额外的SQL去抓取数据，这种行为可以是 `EAGER`（立即发送一条SQL去抓取数据），也可以是`LAZY`（在数据被访问的时候再发送一条SQL去抓取数据）.  这种策略通常称为 `N+1`。
+​ 执行额外的SQL去抓取数据，这种行为可以是 `EAGER`（立即发送一条SQL去抓取数据），也可以是`LAZY`（在数据被访问的时候再发送一条SQL去抓取数据）. 这种策略通常称为 `N+1`。
 
-​	**JOIN**
+​    **JOIN**
 
-​	这种策略是只能是`EAGER`。数据会在通过 OUT JOIN 抓取，所以这种方式只需要执行一条sql语句效率较高。
+​ 这种策略是只能是`EAGER`。数据会在通过 OUT JOIN 抓取，所以这种方式只需要执行一条sql语句效率较高。
 
-​	**BATCH**
+​    **BATCH**
 
-​	执行额外的SQL去加载一些相关的数据通过 IN （:ids）来限制。和`SELECT`一样也分为 `EAGER`和`LAZY`
+​ 执行额外的SQL去加载一些相关的数据通过 IN （:ids）来限制。和`SELECT`一样也分为 `EAGER`和`LAZY`
 
-​	**SUBSELECT**
+​    **SUBSELECT**
 
-​	执行额外的SQL加载关联的数据。和`SELECT`一样也分为 `EAGER`和`LAZY`
+​ 执行额外的SQL加载关联的数据。和`SELECT`一样也分为 `EAGER`和`LAZY`
 
 ***动态（dynamic）***
 
@@ -48,17 +46,17 @@
 
 ​
 
-​	**fetch profiles**
+​    **fetch profiles**
 
-​	在实体类的映射上面定义，但是可以在执行查询的时候选择启用或者禁用。
+​ 在实体类的映射上面定义，但是可以在执行查询的时候选择启用或者禁用。
 
-​	**JPQL / Criteria**
+​    **JPQL / Criteria**
 
-​	JPQL 是JPA规范的查询语句 和 JPA Criteria （JPQL的Java版本）都可以在查询的时候指定要抓取的数据。
+​ JPQL 是JPA规范的查询语句 和 JPA Criteria （JPQL的Java版本）都可以在查询的时候指定要抓取的数据。
 
-​	**entity graph**
+​    **entity graph**
 
-​	使用 JPA EntityGraphs
+​ 使用 JPA EntityGraphs
 
 ## 4.2 直接抓取和实体查询
 
@@ -114,7 +112,7 @@ where
     e.id = 1
 ```
 
-可以看见，直接抓取通过 out join 加载了关联的数据。原因是因为`Employee`配置了`	@ManyToOne(fetch = FetchType.EAGER)`，意味着需要在查找`Employee`的同时也把`Department`加载出来。
+可以看见，直接抓取通过 out join 加载了关联的数据。原因是因为`Employee`配置了`    @ManyToOne(fetch = FetchType.EAGER)`，意味着需要在查找`Employee`的同时也把`Department`加载出来。
 
 *实体查询例子*
 
@@ -205,8 +203,6 @@ where
 	}
 ```
 
-
-
 对于登录这个场景，我们只需要`Employee`的 username 和 password，并不需要`Project`也不需要`Department`的信息。
 
 针对这种情况，我们可以在关联的上配置`fetch = FetchType.LAZY`，但是我们发现为什么`@ManyToMany`没有配置`fetch = FetchType.LAZY`。那是因为 JPA规定了`@OneToOne` 和`@ManyToOne`默认是`fetch = FetchType.EAGER`，而其他的关联默认是`LAZY`。也可以说，如果关联的是一个集合（Collection），那么这个关系就是懒加载。`@OneToMany`和`@ManyToOne`都是作用在关联实体集合上所以说它们是懒加载。
@@ -272,15 +268,13 @@ Employee employee = entityManager.createQuery(query).getSingleResult();
 
 JPA还支持通过一种叫`EntityGraphs`的特性来动态加载数据。通过这种方式可以更加精细化的来控制加载数据。它有两种模式可以选择
 
-​	**fetch mode**
+​    **fetch mode**
 
-​	在`EntityGraph`中指定的所有关系都需要提前加载，没有指定的其他关系在都认为是懒加载。
+​ 在`EntityGraph`中指定的所有关系都需要提前加载，没有指定的其他关系在都认为是懒加载。
 
-​	**load graph**
+​    **load graph**
 
-​	在`EntityGraph`中指定的所有关系都需要提前加载，没有指定的其他关系按照静态（参考4.1）策略。
-
-
+​ 在`EntityGraph`中指定的所有关系都需要提前加载，没有指定的其他关系按照静态（参考4.1）策略。
 
 下面定义一个基础的`EntityGraph`
 

@@ -60,15 +60,14 @@ public class Address {
   private String district;
 
   private String details;
-}   
+}
 ```
 
 再建立联系实体类，在这个类里面关联地址实体类。
 
-同时观察发现`fitst`, `middle`,`last`都是属于名字这一概念，所以我们可以再创建一个类把这三个字段包装起来，使得语义清晰。
+同时观察发现 `fitst`, `middle`,`last`都是属于名字这一概念，所以我们可以再创建一个类把这三个字段包装起来，使得语义清晰。
 
 ```java
-
 @Entity(name = "Contact")
 @Data
 public class Contact {
@@ -114,7 +113,7 @@ class Name {
 4. 嵌套类型：`Name`（Java简单对象（POJO）类，没有实际的表与之相关联）
 5. 实体类型：`Address`（Java简单对象（POJO）类，有实际的表与之相关联）
 
-上面的这些Hibernate类型又分为两大类`值类型`和`实体类型`
+上面的这些Hibernate类型又分为两大类 `值类型`和 `实体类型`
 
 ### 1.1.1 值类型(Value Type)
 
@@ -123,16 +122,14 @@ class Name {
 这些Hibernate类型都属于值类型：
 
 - 基本类型，详细看 1.2。
-
 - 嵌套类型，Java简单对象（POJO）类，没有实际的表与之相关联。需要依附某个实体类型。
 
   这个类里面又有一些基本类型，如上面的Contact中的Name字段。
-
 - 集合类型，虽然前面没提到，但是偶尔也会用到。
 
 ### 1.1.2 实体类型（Entity Type）
 
-实体类型描述了Java简单对象（POJO）类与数据库之间的映射关系。通过`@Entity`来标识。
+实体类型描述了Java简单对象（POJO）类与数据库之间的映射关系。通过 `@Entity`来标识。
 
 当实体作为属性存在在另一个实体对象时，他们只是存在联系，却各自维护自己的状态。如上面的Contact中的address属性。他们是两个实体，却又存在联系。他们各自维护自己的修改和删除。
 
@@ -150,7 +147,7 @@ class Name {
 
 下面的表格列出了Java中的哪些类型属于Hibernate的基础类型。
 
-你可以通过`@Basic`来指定属性类型为基本类型。也可以不添加该注解，上面的领域建模例子就没添加。
+你可以通过 `@Basic`来指定属性类型为基本类型。也可以不添加该注解，上面的领域建模例子就没添加。
 
 | 类别                          | 类型                                             |
 |-----------------------------|------------------------------------------------|
@@ -179,7 +176,6 @@ public enum PhoneType {
 ***@Enumerated(ORDINAL)***
 
 ```java
-
 @Entity(name = "Phone")
 public static class Phone {
 
@@ -196,7 +192,7 @@ public static class Phone {
 ```
 
 当我们插入Java对象到数据库时，hibernate生成下面的sql语句。
-可以看见`PhoneType.MOBILE` 映射到 `1`。@Enumerated(EnumType.ORDINAL)指定枚举到数据库的映射规则是按顺序。MOBILE在PhoneType中的顺序是1，所以就得到了1。
+可以看见 `PhoneType.MOBILE` 映射到 `1`。@Enumerated(EnumType.ORDINAL)指定枚举到数据库的映射规则是按顺序。MOBILE在PhoneType中的顺序是1，所以就得到了1。
 
 ```java
 Phone phone=new Phone();
@@ -215,7 +211,7 @@ VALUES ('123-456-78990', 1, 1)
 
 还有一种枚举映射规则是把枚举值变成字符串。
 
-在属性上加上`@Enumerated(STRING)`
+在属性上加上 `@Enumerated(STRING)`
 
 ```java
 @Enumerated(EnumType.STRING)
@@ -230,11 +226,11 @@ INSERT INTO Phone (phone_number, phone_type, id)
 VALUES ('123-456-78990', 'MOBILE', 1)
 ```
 
-`PhoneType.MOBILE`变成了`'MOBILE'`字符串。
+`PhoneType.MOBILE`变成了 `'MOBILE'`字符串。
 
 ### 1.2.2 Boolean
 
-默认情况下，Java的Boolean映射到数据库的类型是`BIT`、`TINYINT`。
+默认情况下，Java的Boolean映射到数据库的类型是 `BIT`、`TINYINT`。
 
 Hibernate还提供了下面三种内置映射规则
 
@@ -272,8 +268,8 @@ boolean convertedNumeric;
 
 ***@Temporal***
 
-因为上面三种类型是数据库中的标准类型，如果我们在Java中使用的是`java.util.Date`
-来标识时间，Hibernate不知道应该将`java.util.Date`映射到三种数据库时间类型中的哪一种。因此我们需要使用`@Temporal`
+因为上面三种类型是数据库中的标准类型，如果我们在Java中使用的是 `java.util.Date`
+来标识时间，Hibernate不知道应该将 `java.util.Date`映射到三种数据库时间类型中的哪一种。因此我们需要使用 `@Temporal`
 来显示的指定映射到哪一个类型。
 
 *映射java.util.Date 到 DATE*
@@ -297,11 +293,11 @@ private Date timestamp;
 private Date timestamp;
 ```
 
-同样，如果你使用的是`java.util.Calendar`，也需要指定映射到哪一种时间类型。
+同样，如果你使用的是 `java.util.Calendar`，也需要指定映射到哪一种时间类型。
 
 ***映射 Java 8 Date/Time***
 
-前面我们提到了在Java中使用`java.util.Calendar`或者`java.util.Date`来标识时间时应该如何映射。
+前面我们提到了在Java中使用 `java.util.Calendar`或者 `java.util.Date`来标识时间时应该如何映射。
 
 如果我们使用的是Java8新增的Date/Time就不需要去指定映射规则了。因为Java8的Date/Time和数据库的三种日期格式刚刚好对应，映射规则如下：
 
@@ -315,7 +311,7 @@ private Date timestamp;
 
    `java.time.Instant`, `java.time.LocalDateTime`, `java.time.OffsetDateTime`, `java.time.ZonedDateTime`
 
-如果我们使用`LocalDateTime`来标识日期，那将被自动映射到`TIMESTAMP`。不需要添加`@Temporal`。使用上述的其他类型同理。
+如果我们使用 `LocalDateTime`来标识日期，那将被自动映射到 `TIMESTAMP`。不需要添加 `@Temporal`。使用上述的其他类型同理。
 
 ```java
 private LocalDateTime timestamp;
@@ -352,7 +348,6 @@ public enum UserType {
 ```
 
 ```java
-
 @Entity(name = "user")
 @Data
 @Accessors(chain = true)
@@ -371,11 +366,11 @@ public class User {
 }
 ```
 
-用户拥有用户类型，如果我们希望用户类型这个属性在数据库存储的是`UserType`的name,例如`个人`，`企业`这样的字符串， 那我们就需要自定义映射规则。
+用户拥有用户类型，如果我们希望用户类型这个属性在数据库存储的是 `UserType`的name,例如 `个人`，`企业`这样的字符串， 那我们就需要自定义映射规则。
 
 ***@Convert***
 
-编写`Converter`类，定义两种类型之间的映射规则。我们这边是`UserType`与`String`的映射规则。
+编写 `Converter`类，定义两种类型之间的映射规则。我们这边是 `UserType`与 `String`的映射规则。
 
 ```java
 public class UserTypeConverter implements AttributeConverter<UserType, String> {
@@ -392,7 +387,7 @@ public class UserTypeConverter implements AttributeConverter<UserType, String> {
 }
 ```
 
-在需要映射的字段上添加上`@Convert`
+在需要映射的字段上添加上 `@Convert`
 
 ```java
 @Convert(converter = UserTypeConverter.class)
@@ -424,7 +419,7 @@ userRepository.findUserByNameIs("起凡")
 
 在前面的领域建模中，我们使用到了值类型中的嵌套类型。嵌套类型一般是对几个实体类都公用的属性进行包装方便复用，或者是几个属性属于同一个概念把它们放到一个类里面使得语义清晰。
 
-> 嵌套类型需要`@Embeddable`和`@Embedded`搭配使用
+> 嵌套类型需要 `@Embeddable`和 `@Embedded`搭配使用
 >
 > `@Embeddable`表明类本身是一个嵌套类型。
 >
@@ -433,7 +428,6 @@ userRepository.findUserByNameIs("起凡")
 *简单的嵌套类型案例*
 
 ```java
-
 @Entity(name = "Book")
 public static class Book {
 
@@ -472,13 +466,13 @@ create table Book
 )
 ```
 
-Publisher嵌套类是Book的一部分。生成sql语句时，可以看见Book表中也有`publisher_country` `publisher_name`，而不是再生成一个Publisher表。
+Publisher嵌套类是Book的一部分。生成sql语句时，可以看见Book表中也有 `publisher_country` `publisher_name`，而不是再生成一个Publisher表。
 
 ## 1.4 实体类型
 
 Hibernate里面实体类有下面几个要求
 
-- 实体类上需要添加`@Entity`注解
+- 实体类上需要添加 `@Entity`注解
 - 实体类必须有一个public或者protected的无参构造器
 - 接口和枚举不能成为实体类
 - 实体类不能是final，里面的映射字段也不能是final。
@@ -487,8 +481,8 @@ Hibernate里面实体类有下面几个要求
 
 ### 1.4.1 映射实体类
 
-定义一个实体类第一件事就是添加`@Entity(name="选填，默认和类名相同")`。默认情况实体类的名字和你数据库的表名相同,如果你想指定表名可以使用`@Table(name="xxx")`。
-确定好映射的表名后，你需要确定[主键]((#_1-5-主键))并且在主键字段上用`@Id`标识，如果是多个主键请参考[组合组件](#_1-5-2-组合主键)。
+定义一个实体类第一件事就是添加 `@Entity(name="选填，默认和类名相同")`。默认情况实体类的名字和你数据库的表名相同,如果你想指定表名可以使用 `@Table(name="xxx")`。
+确定好映射的表名后，你需要确定[主键](#_1-5-主键))并且在主键字段上用 `@Id`标识，如果是多个主键请参考[组合组件](#_1-5-2-组合主键)。
 最后将类中的属性映射到表中的字段，根据属性的类型选择合适的[值类型](#_1-1-1-值类型-value-type)
 
 ```java
@@ -515,16 +509,14 @@ public class Book {
 
 **@ID**
 
-每个实体类都需要有一个@Id注解来标识注解，或者实体类的父类是`mapped superclass`且也有@id。
+每个实体类都需要有一个@Id注解来标识注解，或者实体类的父类是 `mapped superclass`且也有@id。
 
 > @Id只能作用在基础类型或者基础类型的包装类 *java.lang.String*; *java.util.Date*; *java.sql.Date*;
-*java.math.BigDecimal*;
-
-
+> *java.math.BigDecimal*;
 
 **@GeneratedValue**
 
-GeneratedValue提供了生成主键的规范，只能作用于有`@Id`标识的属性（类型是基本类型）。当插入实体类到数据库时会自动根据策略填充实体类的主键。
+GeneratedValue提供了生成主键的规范，只能作用于有 `@Id`标识的属性（类型是基本类型）。当插入实体类到数据库时会自动根据策略填充实体类的主键。
 
 GenerationType定义了3种主键生成类型。
 
@@ -535,11 +527,9 @@ public enum GenerationType { TABLE, SEQUENCE, IDENTITY, AUTO };
 1. TABLE
 
    为每张表生成一张额外的表来记录主键的生成。
-
 2. SEQUENCE
 
    主键自增（Mysql支持），部分数据库不支持。
-
 3. IDENTITY
 
    为插入的每条记录生成一个唯一的标识id，数据库层面支持（Oracle，SQL Server），部分数据库不支持（Mysql）。
@@ -549,7 +539,6 @@ public enum GenerationType { TABLE, SEQUENCE, IDENTITY, AUTO };
 *简单的组合主键例子*
 
 ```java
-
 @Entity
 public class Employee {
 
@@ -585,23 +574,28 @@ public class Dependent {
 }
 ```
 
-## 1.7 关联
+## 1.6 关联
 
 基本概念：
 
-- 父实体（parent）- 关系反方（inverse side）
+- 父实体（parent）- 关系反方（inverse（mapped） side）
 - 子实体（child）- 关系拥有方（owning side）
 
-Person拥有多个Phone，Phone对应一个Person。Person和Phone之间，Person是父实体，Phone是子实体。由于外键person_id是在Phone中，所以子实体又是关系的拥有方（owning side），父实体是关系的相反方（inverse side）。
+:::tip 重点
+父实体可以将创建/删除/更新等操作级联触发给子实体。反之则不行。
+:::
+
+如何判断父实体和子实体呢？答：通过关系的拥有方来判断。
+如何判断谁是关系的拥有方呢？答：通过外键来判断。
+如：Person拥有多个Phone，Phone对应一个Person。很明显外键person_id是在Phone中，那Phone就是关系的拥有方，所以它是子实体。关系的反方显然就是Person，所以它是父实体。
 
 ### @ManyToOne
 
-多对一是最常见的关系，`@ManyToOne`直接映射到数据库的外键，它建立起了子实体（Child）和父实体（Parent）之间的联系。
+多对一是最常见的关系，`@ManyToOne`直接映射到数据库的外键，它建立起了子实体和父实体之间的多对一关联。
 
 *@ManyToOne*案例
 
 ```java
-
 @Entity(name = "Person")
 public static class Person {
 
@@ -655,7 +649,8 @@ entityManager.flush();
 ```sql
 INSERT INTO Person (id)
 VALUES (1)
-    INSERT
+
+INSERT
 INTO Phone (number, person_id, id)
 VALUES ( '123-456-7890', 1, 2 )
 
@@ -665,23 +660,35 @@ SET number    = '123-456-7890',
 WHERE id = 2
 ```
 
+::: tip
+
+```java
+@ManyToOne
+@JoinColumn(name = "person_id")
+private Person person;
+```
+
+使用过MyBatis的人对于JPA的关系映射一开始肯定有些迷糊。这里的Person为什么可以映射到数据库中的person_id呢？Person明明是一个实体类，而person_id是一个varchar/int等类型。
+你可以观察一下上面的SQL语句。在新增phone时，person_id的值就是person对象的id。所以其实本质上还是Person实体类的id映射到person_id。
+:::
+
 ### @OneToMany
 
-之前说了Person可以关联多个Phone。可以使用`@OneToMany`来管理所有的子实体。 在使用`@OneToMany`时有两种情况：
+之前说了Person可以关联多个Phone。可以使用 `@OneToMany`来管理所有的子实体。 在使用 `@OneToMany`时有两种情况：
 
-- 第一种情况是子实体有`@ManyToOne`此时建立起的联系`bidirectional`.
-- 第二种情况是子实体没有`@ManyToOne`，这种情况`@OneToMany`建立起的关联是`unidirectional`。（建议不要使用这种关联）
+- 第一种情况是子实体有 `@ManyToOne`此时建立起的联系bidirectional（双向）.
+- 第二种情况是子实体没有 `@ManyToOne`，这种情况 `@OneToMany`建立起的关联是unidirectional（单向）。（建议不要使用这种关联）
 
-需要注意的是，外键只在`@ManyToOne`的一方，`@OneToMany`的一方不存在外键。
+需要注意的是，外键只在 `@ManyToOne`的一方，`@OneToMany`的一方不存在外键。
 
-*@OneToMany bidirectional例子*
+*Bidirectional `@OneToMany`例子*
 
-bidirectional @OneToMany 顾名思义它需要同时存在`owning side`（子实体@ManyToOne）和`inverse（mappedBy） side`（父实体OneToMany）。
+Bidirectional `@OneToMany` 顾名思义它需要同时存在 `owning side`（子实体@ManyToOne）和 `inverse（mappedBy） side`（父实体OneToMany）这样才能达成双向关系。
 
 ::: tip
 
 ```java
- @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
 ```
 
 - mappedBy：的意思是子实体通过person关联到父实体，这样就可以知道子实体的外键字段是什么。正如我们手写sql一样，如果需要查询Person拥有的Phone显然需要知道Phone里面的外键是这么。
@@ -692,7 +699,8 @@ select * from person t1 left join phone t2 on t1.id=t2.person_id --外键 person
 
 - cascade：CascadeType.ALL就是代表级联触发所有的操作。在关联中只有父实体可以级联更新/删除/创建子实体，反之不行。
 - orphanRemoval：的意思是当你更改phones数组内的Phone后，保存到数据库数据库也会删除掉子实体。参考下面的案例就理解了。
-  :::
+
+:::
 
 ```java
 @Entity(name = "Person")
@@ -701,9 +709,7 @@ public static class Person {
 	@Id
 	@GeneratedValue
 	private Long id;
-	// mappedBy的意思是子实体通过person关联到父实体，这样就可以知道子实体的外键字段是什么。left join phone t on t.person_id = id。 
-	// 在关联中只有父实体可以级联更新/删除/创建子实体，反之不行。CascadeType.ALL就是代表级联触发所有的操作。
-	//
+
 	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Phone> phones = new ArrayList<>();
 
@@ -730,7 +736,7 @@ public static class Phone {
 	@NaturalId
 	@Column(name = "`number`", unique = true)
 	private String number;
-	
+
 	// 可以不写@JoinColumn，默认会以person_id作为外键。
 	// 关联父实体
 	@ManyToOne
@@ -757,7 +763,7 @@ public static class Phone {
 }
 ```
 
-将两个phone和person关联，并一起插入到数据库。随后删除其中一个phone和person的关联。
+将两个phone对象和person对象关联，插入person到数据库时，会将两个phone对象一起级联插入到数据库。随后删除其中一个phone对象和person对象的关联。
 
 ```java
 Person person = new Person();
@@ -792,4 +798,256 @@ DELETE FROM Phone
 WHERE  id = 2
 ```
 
+### @OneToOne
+
+在使用 `@OneToOne`同样有 bidirectional 和 unidirectional 两种情况。依然是不推荐使用 unidirectional。
+
+*Unidirectional `@OneToOne`*
+
+下面的Phone关联了PhoneDetails，在PhoneDetails并没有 `@OneToOne`。在Phone里面 `@OneToOne`映射到了外键details_id，这种就属于单向关系。
+
+在一对一的关联中，外键放在哪一边比较合适是新手比较少思考的问题。在这个例子里面我的推荐是放在PhoneDetails，因为PhoneDetails无法脱离Phone而存在，所以它适合作为子实体，Phone做为父实体。
+
+```java
+@Entity(name = "Phone")
+public static class Phone {
+
+	@Id
+	@GeneratedValue
+	private Long id;
+
+	@Column(name = "`number`")
+	private String number;
+
+	@OneToOne
+	@JoinColumn(name = "details_id")
+	private PhoneDetails details;
+
+	//Getters and setters are omitted for brevity
+
+}
+
+@Entity(name = "PhoneDetails")
+public static class PhoneDetails {
+
+	@Id
+	@GeneratedValue
+	private Long id;
+
+	private String provider;
+
+	private String technology;
+
+	//Getters and setters are omitted for brevity
+
+}
+```
+
+*Bidirectional @OneToOne*
+
+可以看见现在外键phone_id是在PhoneDetails，同时Phone里面也多了 `@OneToOne`关联子实体，形成了双向关联。
+
+```java
+@Entity(name = "Phone")
+public static class Phone {
+
+	@Id
+	@GeneratedValue
+	private Long id;
+
+	@Column(name = "`number`")
+	private String number;
+
+	@OneToOne(
+		mappedBy = "phone",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true
+	)
+	private PhoneDetails details;
+
+	//Getters and setters are omitted for brevity
+
+	public void addDetails(PhoneDetails details) {
+		details.setPhone(this);
+		this.details = details;
+	}
+
+	public void removeDetails() {
+		if (details != null) {
+			details.setPhone(null);
+			this.details = null;
+		}
+	}
+}
+
+@Entity(name = "PhoneDetails")
+public static class PhoneDetails {
+
+	@Id
+	@GeneratedValue
+	private Long id;
+
+	private String provider;
+
+	private String technology;
+
+	@OneToOne
+	// 可以不写@JoinColumn
+	@JoinColumn(name = "phone_id")
+	private Phone phone;
+
+	//Getters and setters are omitted for brevity
+
+}
+```
+
+```java
+Phone phone = new Phone("123-456-7890");
+PhoneDetails details = new PhoneDetails("T-Mobile", "GSM");
+
+phone.addDetails(details);
+entityManager.persist(phone);
+```
+
+```sql
+INSERT INTO Phone ( number, id )
+VALUES ( '123-456-7890', 1 )
+
+INSERT INTO PhoneDetails ( phone_id, provider, technology, id )
+VALUES ( 1, 'T-Mobile', 'GSM', 2 )
+```
+
+### @ManyToMany
+
+@ManyToMany不够灵活性能也比较差。 建议使用@OneToMany关联中间表。PersonAddress是Person和Address的中间表。
+
+这样你可以随时向中间表添加字段，使用@ManyToMany就没有办法了。
+
+```java
+@Entity(name = "Person")
+public static class Person implements Serializable {
+
+	@Id
+	@GeneratedValue
+	private Long id;
+
+	@NaturalId
+	private String registrationNumber;
+
+	@OneToMany(
+		mappedBy = "person",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true
+	)
+	private List<PersonAddress> addresses = new ArrayList<>();
+
+	//Getters and setters are omitted for brevity
+
+	public void addAddress(Address address) {
+		PersonAddress personAddress = new PersonAddress(this, address);
+		addresses.add(personAddress);
+		address.getOwners().add(personAddress);
+	}
+
+	public void removeAddress(Address address) {
+		PersonAddress personAddress = new PersonAddress(this, address);
+		address.getOwners().remove(personAddress);
+		addresses.remove(personAddress);
+		personAddress.setPerson(null);
+		personAddress.setAddress(null);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Person person = (Person) o;
+		return Objects.equals(registrationNumber, person.registrationNumber);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(registrationNumber);
+	}
+}
+
+@Entity(name = "PersonAddress")
+public static class PersonAddress implements Serializable {
+
+	@Id
+	@ManyToOne
+	private Person person;
+
+	@Id
+	@ManyToOne
+	private Address address;
+
+	//Getters and setters are omitted for brevity
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		PersonAddress that = (PersonAddress) o;
+		return Objects.equals(person, that.person) &&
+				Objects.equals(address, that.address);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(person, address);
+	}
+}
+
+@Entity(name = "Address")
+public static class Address implements Serializable {
+
+	@Id
+	@GeneratedValue
+	private Long id;
+
+	private String street;
+
+	@Column(name = "`number`")
+	private String number;
+
+	private String postalCode;
+
+	@OneToMany(
+		mappedBy = "address",
+		cascade = CascadeType.ALL,
+		orphanRemoval = true
+	)
+	private List<PersonAddress> owners = new ArrayList<>();
+
+	//Getters and setters are omitted for brevity
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Address address = (Address) o;
+		return Objects.equals(street, address.street) &&
+				Objects.equals(number, address.number) &&
+				Objects.equals(postalCode, address.postalCode);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(street, number, postalCode);
+	}
+}
+```
 
