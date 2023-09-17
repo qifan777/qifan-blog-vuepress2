@@ -1,8 +1,17 @@
-# 参考
+---
+category:
+  - SpringBoot
+tag:
+  - 后端基础
+  - SpringBoot
 
-## 通用模块
+date: 2023-09-10
+timeline: true
+---
 
-### BaseEntity
+# 通用模块
+
+## BaseEntity
 
 所有的实体都会继承该基础实体，里面包含了主键Id和Id的
 
@@ -88,4 +97,3 @@ public abstract class BaseEntity extends AbstractAggregateRoot<BaseEntity> {
 
 ```
 
-##

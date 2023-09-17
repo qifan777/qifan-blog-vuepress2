@@ -8,7 +8,16 @@
 <center>
     <img src="./img.png">
 
-图1 表之间的关系
+图0 表之间的关系
+</center>
+
+下图是新增商品时涉及的表，下面将会一一介绍每个表的设计。
+
+
+<center>
+    <img src="./img_5.png">
+
+图1 操作逻辑上的关系
 </center>
 
 - `ProductCategory`：商品类别
@@ -31,16 +40,40 @@
 id，创建时间，更新时间等字段。请参考[BaseEntity](../reference#baseentity)
 :::
 
-```java
+### ProductCategory
 
+<center>
+    <img src="./img_2.png" height="500">
+
+图2 商品类别展示
+</center>
+<center>
+    <img src="./img_3.png">
+
+图3 商品类别创建
+</center>
+
+::: info
+通过图1可以知道一个类别下有多个商品，一个商品只有一个类别。因此ProductCategory的实体内使用`@OneToMany`关联了子实体[Product]()
+
+```java
+@GenField(association = true, value = "产品列表")
+@OneToMany(mappedBy = "category")
+@ToString.Exclude
+private List<Product> products;
 ```
 
-```java
+详细用法请参考[`@OneToMany`](../../../knowledge/jpa/hibernate/#onetomany)
+:::
 
+```java
 @GenEntity
 @Entity
 @Accessors(chain = true)
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 public class ProductCategory extends BaseEntity {
 
   @GenField(value = "类别名称")
@@ -49,6 +82,10 @@ public class ProductCategory extends BaseEntity {
   private String icon;
   @GenField(value = "类别序号", type = ItemType.INPUT_NUMBER)
   private Integer sort;
+  @GenField(association = true, value = "产品列表")
+  @OneToMany(mappedBy = "category")
+  @ToString.Exclude
+  private List<Product> products;
   @GenField(ignoreRequest = true)
   private ValidStatus validStatus;
 
@@ -61,5 +98,97 @@ public class ProductCategory extends BaseEntity {
     setValidStatus(ValidStatus.INVALID);
   }
 
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null) {
+      return false;
+    }
+    Class<?> oEffectiveClass =
+        o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer()
+            .getPersistentClass() : o.getClass();
+    Class<?> thisEffectiveClass =
+        this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer()
+            .getPersistentClass() : this.getClass();
+    if (thisEffectiveClass != oEffectiveClass) {
+      return false;
+    }
+    ProductCategory that = (ProductCategory) o;
+    return getId() != null && Objects.equals(getId(), that.getId());
+  }
+
+  @Override
+  public final int hashCode() {
+    return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer()
+        .getPersistentClass().hashCode() : getClass().hashCode();
+  }
+}
+```
+
+### ProductAttribute
+
+<center>
+    <img src="./img_4.png">
+
+图4 商品属性展示
+</center>
+
+```java
+@GenEntity
+@Entity
+@Accessors(chain = true)
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+public class ProductAttribute extends BaseEntity {
+
+  @GenField(value = "商品", association = true)
+  @ManyToOne
+  private Product product;
+  @GenField(value = "属性名称")
+  private String name;
+  @GenField(value = "属性值")
+  private String attributeValues;
+  @GenField(ignoreRequest = true)
+  private ValidStatus validStatus;
+
+
+  public void valid() {
+    setValidStatus(ValidStatus.VALID);
+  }
+
+  public void invalid() {
+    setValidStatus(ValidStatus.INVALID);
+  }
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null) {
+      return false;
+    }
+    Class<?> oEffectiveClass =
+        o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer()
+            .getPersistentClass() : o.getClass();
+    Class<?> thisEffectiveClass =
+        this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer()
+            .getPersistentClass() : this.getClass();
+    if (thisEffectiveClass != oEffectiveClass) {
+      return false;
+    }
+    ProductAttribute that = (ProductAttribute) o;
+    return getId() != null && Objects.equals(getId(), that.getId());
+  }
+
+  @Override
+  public final int hashCode() {
+    return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer()
+        .getPersistentClass().hashCode() : getClass().hashCode();
+  }
 }
 ```
