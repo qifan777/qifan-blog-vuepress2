@@ -97,3 +97,58 @@ public abstract class BaseEntity extends AbstractAggregateRoot<BaseEntity> {
 
 ```
 
+## EntityOperations
+
+针对常见的增加和修改操作进行了函数式封装。下面是一个正常的更新用户信息流程。
+
+```java
+public void updateUser(UserUpdateRequest request, String id) {
+// 查询数据中的用户信息
+User user = userRepository.findById(id)
+    .orElseThrow(() -> new BusinessException(ResultCode.NotFindError));
+// 前端传来的更新请求更新用户
+userMapper.updateEntityFromUpdateRequest(request, user);
+// 保存到数据库
+userRepository.save(user);
+// 打印日志
+log.info("更新user：{}", user);
+}
+```
+
+使用`EntityOperations`函数式编程改造上面的更新流程。在update操作上注册多个钩子，最后execute逐一执行这些钩子。每个钩子都具备语义，相比于上面的流程会更加清晰易懂。
+
+```java
+// 创建update操作对象，需要传入repository，因为最后要保存到数据库。
+EntityOperations.doUpdate(userRepository)
+    // 根据id加载用户信息，userRepository包含了泛型，所以这边loadById返回的是User类型
+    .loadById(id)
+    // 更新数据库中的user信息。
+    .update(e -> userMapper.updateEntityFromUpdateRequest(request, e))
+    // 当保存到数据库成功后会执行下面的回调函数打印日志。
+    .successHook(e -> log.info("更新user：{}", e))
+    // 开始执行
+    .execute();
+```
+
+使用`EntityOperations`执行创建操作也是一样的。
+
+```java
+public String createUser(UserCreateRequest request) {
+    // 创建create操作
+    Optional<User> user = EntityOperations.doCreate(userRepository)
+        // 从前端请求得到需要创建的user对象
+        .create(() -> userMapper.createRequest2Entity(
+            request))
+        // 在插入到数据库之前做一些修改操作
+        .update(e -> e.getPhonePassword().setUser(e))
+        // 创建成功后
+        .successHook(e -> log.info("创建user：{}", e))
+        // 执行创建
+        .execute();
+    return user.isPresent() ? user.get()
+        .getId() : "";
+}
+```
+
+
+
