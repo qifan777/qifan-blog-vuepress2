@@ -7,17 +7,18 @@ tag:
   - Hibernate
 date: 2023-03-01
 timeline: true
+
 ---
 
 Hibernate中的数据懒加载和提前加载，根据需要可以动态的加载需要的数据。可以说是SQL中select ...
 
 <!-- more -->
 
-# 2. 抓取数据（Fetch）
+# 3. 抓取数据（Fetch）
 
 在查询的时候返回太多的数据对于 JDBC 传输数据和 ResultSet 处理过程都是不必要的开销，抓取太少的数据会导致执行额外的查询语句也降低了执行效率。所以说调节数据抓取的深度和广度对应用的性能影响是是很大的。
 
-## 2.1 基础概念
+## 3.1 基础概念
 
 抓取数据本身的概念可以将抓取数据产生的问题分成两种问题。
 
@@ -73,7 +74,7 @@ Hibernate中的数据懒加载和提前加载，根据需要可以动态的加�
 
 ​ 使用 JPA EntityGraphs
 
-## 2.2 直接抓取和实体查询
+## 3.2 直接抓取和实体查询
 
 要了解直接抓取数据和实体查询在提前地抓（`eagerly`）取关联数据上的区别，可以看下面这个例子。
 
@@ -163,7 +164,7 @@ where
 
 > 上面的例子提醒了我们，如果我们在关联上配置了 `fetch = FetchType.EAGER` 那么我们在写实体查询的时候就要使用`join fetch`去将配置了上诉注解的关联加载出来。要不然就会出现`N+1`的性能问题，生成了额外的查询语句。
 
-## 2.3 不抓取数据
+## 3.3 不抓取数据
 
 ```java
 	@Entity(name = "Department")
@@ -237,11 +238,11 @@ Employee employee = entityManager.createQuery(
 
 现在上面的实体查询就不会触发额外的sql语句，只会从`Employee`中获取数据。
 
-## 2.4 动态抓取
+## 3.4 动态抓取
 
 第二种场景，页面上需要显示`Employee`的`Projects`，但是不需要显示`Department`。所以我们需要加载`Employee`和它关联的`Projects`
 
-### 2.4.1 通过查询动态抓取
+### 3.4.1 通过查询动态抓取
 
 ***通过 JPQL 动态抓取***
 
@@ -279,7 +280,7 @@ Employee employee = entityManager.createQuery(query).getSingleResult();
 
 上面两个案例表单意思是一样的，写法不同。都是 JPA 规定的查询语法分表叫`JPQL` 和`Criteria Api `。通过`fetch`可以取得所需的数据，在查询的同时会生成 out join 去加载相关联的数据。通过上面这种方法动态加载，只需要一条sql语句就可以获取所需的数据。
 
-### 2.4.2 通过EntityGraph动态抓取
+### 3.4.2 通过EntityGraph动态抓取
 
 JPA还支持通过一种叫`EntityGraphs`的特性来动态加载数据。通过这种方式可以更加精细化的来控制加载数据。它有两种模式可以选择
 
@@ -289,7 +290,7 @@ JPA还支持通过一种叫`EntityGraphs`的特性来动态加载数据。通过
 
 ​    **load graph**
 
-​ 在`EntityGraph`中指定的所有关系都需要提前加载，没有指定的其他关系按照静态（参考2.1）策略。
+​ 在`EntityGraph`中指定的所有关系都需要提前加载，没有指定的其他关系按照静态（参考3.1）策略。
 
 下面定义一个基础的`EntityGraph`
 
