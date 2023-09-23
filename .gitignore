@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 /dist
+
 .temp
 .cache
 
@@ -29,3 +30,4 @@ node_modules/
 blog/.vuepress/.cache/
 blog/.vuepress/.temp/
 blog/.vuepress/dist/
+/blog/.vuepress/blog/
