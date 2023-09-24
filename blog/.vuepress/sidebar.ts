@@ -44,5 +44,6 @@ export default sidebar({
             text: 'TypeScript', link: '/knowledge/vite/typescript',
         }
     ],
-    '/knowledge/jpa/hibernate': 'structure'
+    '/knowledge/jpa/hibernate': 'structure',
+    '/tools/idea': 'structure'
 });
