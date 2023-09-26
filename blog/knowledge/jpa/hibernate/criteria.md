@@ -4,9 +4,17 @@ order: 2
 
 # 2. 动态SQL（Criteria）
 
-Criteria 查询提供了用编程的形式去写JPQL或者SQL，同时它也是类型安全的。通过它可以编写动态的SQL，比如where条件动态拼接，order by 动态字段等操作。相比于传统的字符串SQL拼接，它的优点就是类型安全。
+在JPA中写SQL三种方式
 
-criteria被很多初学者认为不直观，难以学习。其实是他们习惯了写SQL换成编程的形式去写SQL，现在需要去理解各种接口各种类不想花一些时间去学习。
+- JPQL
+  如果你的SQL语句不是动态的那建议使用JPQL，JPQL和SQL写起来差不多。主要区别是JPQL是面向实体类，SQL是直接面向底层的表。
+- Criteria
+  Criteria 查询提供了用编程的形式去写JPQL，同时它也是类型安全的。通过它可以编写动态的JPQL，比如where条件动态拼接，order by 动态字段等操作。相比于传统的字符串SQL拼接，它的优点就是类型安全。Criteria你也可以说是JPQL的编程版本。
+- NativeSQL
+  由于JPQL提供的是所有数据库通用的写法，如果你想使用具体数据库的特性，可以写NativeSQL（原生SQL）。
+
+JPA中最难的查询方式就是criteria了，所以本章主要criteria做介绍。
+
 <center>
 <img src="./img.png">
 
@@ -14,6 +22,48 @@ criteria被很多初学者认为不直观，难以学习。其实是他们习惯
 </center>
 
 这张图是criteria中涉及的所有接口以及他们之间的关系。是不是看着感觉很难，不用害怕，下面我用几个例子带你看懂这张图。
+
+## 简单的案例
+
+下面是一段JPQL看着是不是和SQL很相似，但是仔细观察你可以发现这里面的表名是实体类名，字段名是实体类的属性。
+
+```sql
+select u from User u left join UserWeChat uw on u.id=uw.id where uw.openId='oEheF5USRu6Y3qWjpb3wJPBfuejw' and u.phonePassword.phoneNumber like '136%'
+```
+
+::: tip
+JPQL和NativeSQL操作对象的区别参考下面。
+`UserPhonePassword`是实体类的名字，`USER_PHONE_PASSWORD`是实体类映射到数据库的表名。`phoneNumber`是实体类的属性名，映射到数据库中的表字段是`phone_number`。
+
+```java
+@Table(name = "USER_PHONE_PASSWORD")
+@Entity
+public class UserPhonePassword extends BaseEntity {
+  @Column(name = "phone_number", unique = true)
+  private String phoneNumber;
+}
+```
+
+:::
+
+### from对象
+
+观察这段JPQL，可以看到 u 和 uw 两个别名。u在criteria里面它叫`Root`，因为它是这段sql里面的起始表。uw在criteria里面它叫`Join`，这个就很明显了因为它是通过join得到的。
+
+通过图1你可以看见 `Root`和`Join`都是`From`的子类。在写SQL的时候可以知道from之后可以join别的表，join之后也可以再join别的表。因此`From`的子类就意味着它可以具备join的能力。
+
+:::tip
+知识点：`From`的子类可以Join别的表。
+:::
+
+### 字段访问
+
+这段sql中`u.id`，`p.id`和`p.phone_number`都是属于字段访问操作，分别在select，on，where中出现。总结规律可以得知在`From`对象都可以对字段进行访问。
+
+:::info
+在 JPQL 中可以用u.phonePassword.phoneNumber形式去访问到关联的表字段。其中`u.phonePassword`相当于原生SQL里面的 join phone_password。`u.phonePassword`得到的对象这边叫做`Path`，`Path`对象可以继续向下访问字段。
+因此不单单`From`对象可以对字段进行访问，字段访问后的对象`Path`也可以继续字段访问。
+:::
 
 ## Select
 
@@ -242,3 +292,100 @@ select u.*, r.* from user u, role r
 ```
 
 ## 条件表达式（Conditional Expressions）
+
+### 比较运算
+
+```query.where(条件1,条件2...条件n)```对应的sql是where 条件1 and 条件2 .... and 条件n
+
+```java
+@Test
+  public void compare() {
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<Menu> query = criteriaBuilder.createQuery(Menu.class);
+    Root<Menu> menuRoot = query.from(Menu.class);
+
+    // 可以忽略不写select,默认就是select menuRoot
+    // query.select(menuRoot);
+
+    // where里面可以传多个条件 多个条件是and逻辑连接.
+    query.where(criteriaBuilder.notEqual(menuRoot.get(Menu_.id), "1"),
+        criteriaBuilder.ge(menuRoot.get(Menu_.orderNum), 0));
+    entityManager.createQuery(query).getResultList().forEach(menu -> {
+      log.info("菜单: {}", menu);
+    });
+    // 下面的条件不参与where拼接
+    // = 运算符
+    criteriaBuilder.equal(menuRoot.get(Menu_.id), "1");
+    // != 运算符
+    criteriaBuilder.notEqual(menuRoot.get(Menu_.id), "1");
+    // ---- 下面的条件只能是数值型属性之间的比较 >= > <= <
+    //  >= 运算符
+    criteriaBuilder.ge(menuRoot.get(Menu_.orderNum), 0);
+    //  > 运算符
+    criteriaBuilder.gt(menuRoot.get(Menu_.orderNum), 0);
+    //  <= 运算符
+    criteriaBuilder.le(menuRoot.get(Menu_.orderNum), 0);
+    // < 运算符
+    criteriaBuilder.lt(menuRoot.get(Menu_.orderNum), 0);
+    // ---- 下面的条件可以是非数值型属性之间的比较 >= > <= <
+    //  >= 运算符
+    criteriaBuilder.greaterThanOrEqualTo(menuRoot.get(Menu_.createdAt), LocalDateTime.now());
+    //  > 运算符
+    criteriaBuilder.greaterThan(menuRoot.get(Menu_.createdAt), LocalDateTime.now());
+    // <= 运算符
+    criteriaBuilder.lessThanOrEqualTo(menuRoot.get(Menu_.createdAt), LocalDateTime.now());
+    // > 运算符
+    criteriaBuilder.lessThan(menuRoot.get(Menu_.createdAt), LocalDateTime.now());
+
+  }
+```
+
+```sql
+select
+  m.*
+from
+  menu m
+where
+  m.id!=?
+  and m.order_num>=?
+```
+
+### 逻辑运算
+
+`criteriaBuilder.or(条件1,条件2)`会返回一个新的条件即(条件1 or 条件2)
+
+```java
+  @Test
+  public void logical() {
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class);
+    Root<User> userRoot = query.from(User.class);
+    //           (
+    //              u.nickname=?
+    //              or u.nickname=?
+    //          )
+    query.where(criteriaBuilder.or(criteriaBuilder.equal(userRoot.get(User_.nickname), "起凡"),
+            criteriaBuilder.equal(userRoot.get(User_.nickname), "默认用户")),
+        // and u.avatar not like ? escape ''
+        criteriaBuilder.not(criteriaBuilder.like(userRoot.get(User_.avatar), "%https%")),
+        // and u.gender in (?,?)
+        userRoot.get(User_.gender).in(GenderType.MALE, GenderType.FEMALE));
+    entityManager.createQuery(query).getResultList().forEach(res -> {
+      log.info(res.toString());
+    });
+  }
+```
+
+```sql
+  select
+      u.*
+  from
+      user u
+  where
+      (
+          u.nickname=?
+          or u.nickname=?
+      )
+      and u.avatar not like ? escape ''
+      and u.gender in (?,?)
+```
