@@ -1,5 +1,13 @@
 ---
 sidebar: heading
+category:
+  - 网站搭建
+tag:
+  - Nginx
+  - 宝塔
+  - 部署
+date: 2023-08-09
+timeline: true
 ---
 
 # 手把手教你搭建静态/博客网站

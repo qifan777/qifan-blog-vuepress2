@@ -1,9 +1,8 @@
 ---
 category:
-  - Hibernate
+  - JPA
 tag:
   - ORM
-  - JPA
   - Hibernate
   - JPA建模
 date: 2023-03-01
@@ -719,7 +718,7 @@ Bidirectional `@OneToMany` 顾名思义它需要同时存在 `owning side`（子
 @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 ```
 
-- mappedBy：的意思是子实体通过User关联到父实体，这样就可以知道子实体的外键字段是什么。正如我们手写sql一样，如果需要查询User拥有的Address显然需要知道Address里面的外键是什么。
+- mappedBy：的意思是子实体通过user属性关联到父实体，这样就可以知道子实体的外键字段是什么。正如我们手写sql一样，如果需要查询User拥有的Address显然需要知道Address里面的外键是什么。
 
 ```sql
 select * from user t1 left join address t2 on t1.id=t2.user_id --外键 user_id

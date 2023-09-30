@@ -38,13 +38,7 @@ export default navbar([
             },
             {
                 text: 'JPA',
-                prefix: "jpa/",
-                children: [
-                    {
-                        text: 'Hibernate',
-                        link: 'hibernate/'
-                    }
-                ]
+                link: "jpa/hibernate/"
             },
             {
                 text: "Nginx博客/网站搭建",

@@ -1,3 +1,15 @@
+---
+category:
+  - ChatGPT
+tag:
+  - Vue3
+  - Stream请求
+  - Websocket
+  - Stomp
+  - Proxy
+date: 2023-06-22
+timeline: true
+---
 # 第八期 Stream 请求 ChatGPT/WebSocket 推送响应
 
 ## 本期内容

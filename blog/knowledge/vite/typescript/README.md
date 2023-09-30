@@ -1,4 +1,13 @@
-# typescript
+---
+category:
+  - 前端工程化
+tag:
+  - Typescript
+date: 2023-09-08
+timeline: true
+---
+
+# Typescript
 
 vite对typescript的支持是内置的，因此不需要配置typescript的编译，只需要在代码中增加tsconfig.json控制typescript的提示效果。
 

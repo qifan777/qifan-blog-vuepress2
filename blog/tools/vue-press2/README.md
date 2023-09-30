@@ -1,5 +1,13 @@
 ---
 sidebar: heading
+category:
+  - 网站搭建
+tag:
+  - VuePress2
+  - VitePress
+  - Markdown
+date: 2023-08-15
+timeline: true
 ---
 
 # VuePress2搭建自己的博客/官方网站

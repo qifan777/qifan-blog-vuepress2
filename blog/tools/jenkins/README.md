@@ -1,5 +1,12 @@
 ---
 sidebar: heading
+category:
+  - CI/CD
+tag:
+  - 部署
+  - 自动化
+date: 2023-08-22
+timeline: true
 ---
 
 # 工作必用的Jenkins

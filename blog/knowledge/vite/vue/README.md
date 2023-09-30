@@ -1,5 +1,12 @@
-
-# vue
+---
+category:
+  - 前端工程化
+tag:
+  - Vue3
+date: 2023-09-08
+timeline: true
+---
+# Vue
 
 现在我们开始在vite上加入vue框架。vue我就不多介绍了相信大家都懂。
 

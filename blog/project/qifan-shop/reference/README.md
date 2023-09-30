@@ -1,10 +1,10 @@
 ---
 category:
-  - SpringBoot
-tag:
+  - 起凡小商店
   - 后端基础
-  - SpringBoot
-
+tag:
+  - JPA
+  - 函数式抽象
 date: 2023-09-10
 timeline: true
 ---

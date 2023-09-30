@@ -1,5 +1,13 @@
 ---
 sidebar: heading
+category:
+   - ChatGPT
+tag:
+   - Proxy
+   - V2raA
+   - Docker
+date: 2023-05-10
+timeline: true
 ---
 
 # ChatGPT Next Web 搭建教程

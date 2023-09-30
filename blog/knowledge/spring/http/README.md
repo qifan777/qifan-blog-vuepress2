@@ -1,11 +1,11 @@
 ---
 sidebar: heading
 category:
-  - idea技巧
+  - IDEA技巧
 tag:
-  - http
-  - spring boot
-  - idea
+  - HTTP
+  - SpringBoot
+  - SpringMVC
 date: 2021-10-01
 timeline: true
 ---

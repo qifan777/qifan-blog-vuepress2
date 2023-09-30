@@ -1,6 +1,6 @@
 ---
 category:
-  - Hibernate
+  - JPA
 tag:
   - ORM
   - JPA

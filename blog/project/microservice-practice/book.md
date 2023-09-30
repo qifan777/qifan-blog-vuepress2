@@ -1,5 +1,16 @@
 ---
 sidebar: heading
+category:
+  - 多模块微服务
+tag:
+  - 领域驱动DDD
+  - 六边形架构
+  - 部署
+  - Docker
+  - Maven
+
+date: 2022-11-05
+timeline: true
 ---
 
 # 多模块微服务构建部署实战

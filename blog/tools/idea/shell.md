@@ -1,10 +1,10 @@
 ---
 category:
-  - idea技巧
+  - IDEA技巧
 tag:
-  - ssh
-  - database
-  - sftp
+  - SSH
+  - 数据库
+  - SFTP
   - 部署
 date: 2023-09-24
 timeline: true

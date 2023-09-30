@@ -1,5 +1,14 @@
 ---
 sidebar: heading
+category:
+  - IDEA技巧
+tag:
+  - CodeWithMe
+  - JetbrainsGateway
+  - 内网穿透
+  - 远程开发
+date: 2023-08-01
+timeline: true
 ---
 # 远程开发工具分享
 

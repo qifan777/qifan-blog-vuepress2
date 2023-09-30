@@ -1,5 +1,13 @@
-
-# vite
+---
+category:
+  - 前端工程化
+tag:
+  - Vite
+  - 打包脚手架
+date: 2023-09-08
+timeline: true
+---
+# Vite
 
 以前的vue-cli是基于webpack，而webpack在开发阶段启动的速度是十分缓慢。原因是webpack会把一整个项目从入口开始（index.html）将涉及的所有的模块打包成一个js文件（图1）。
 

@@ -1,3 +1,16 @@
+---
+title: ChatGPT二次开发
+category:
+  - ChatGPT
+tag:
+  - MongoDB
+  - Vue3
+  - Typescript
+  - ElementUI
+  - WebSocket
+date: 2023-05-17
+timeline: true
+---
 # ChatGPT-Assistant
 
 ## 项目介绍
