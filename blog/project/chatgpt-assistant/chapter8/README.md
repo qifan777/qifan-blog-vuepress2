@@ -11,17 +11,13 @@
 
 ### 1. WebsocketController 接收消息
 
-与 MVC 中的 Controller 不同，这边不能使用`@RestController`需要用`@Controller`。`@AllArgsConstructor`
-是 lombok 提供的一个为类中的属性生成构成器的注解。这样我们可以方便的使用 Spring 推荐的构造器依赖注入。
+与 MVC 中的 Controller 不同，这边不能使用`@RestController`需要用`@Controller`。`@AllArgsConstructor`是 lombok 提供的一个为类中的属性生成构成器的注解。这样我们可以方便的使用 Spring 推荐的构造器依赖注入。
 
 `@MessageMapping`类似于`@RequestMapping`用来标识消息路由。它不仅可以加在方法上，也可以加载类上。加在类上那就表名类中的所有消息路由都会拼接上这个路径。
 
-在被`@MessageMapping`标识的方法中（如下的 chat 方法），可以使用`@Payload`解析 JSON 格式的消息体和`@RequestBody`
-一样。同时也可以配合`@Valid`或者`@Validated`做参数校验。
+在被`@MessageMapping`标识的方法中（如下的 chat 方法），可以使用`@Payload`解析 JSON 格式的消息体和`@RequestBody`一样。同时也可以配合`@Valid`或者`@Validated`做参数校验。
 
-chat()方法的第二个参数接收了`Principle`
-。它代表着在 websocket 的 handshake 阶段获取到的用户信息。可以参考`io.qifan.chatgpt.assistant.infrastructure.websocket.UserHandshakeHandler#determineUser`
-这个方法。
+chat()方法的第二个参数接收了`Principle`。它代表着在 websocket 的 handshake 阶段获取到的用户信息。可以参考`io.qifan.chatgpt.assistant.infrastructure.websocket.UserHandshakeHandler#determineUser`这个方法。
 
 ```java
 
@@ -40,9 +36,9 @@ public class WebsocketChatMessageController {
 
 > 此外，在被`@MessageMapping`标识的方法中还可以接收
 >
-> 1.  `@Headers`或者`@Header`获取 Stomp 协议中的消息头，和 http 协议中的请求头类似。
-> 2.  `@DestinationVariable`获取`@MessageMapping("/chat/{id}")`的 id 变量。和`@PathVariable`一样
-> 3.  接受完整的`Message`对象，其中包含消息头和消息体消息目标路由等。
+> 1. `@Headers`或者`@Header`获取 Stomp 协议中的消息头，和 http 协议中的请求头类似。
+> 2. `@DestinationVariable`获取`@MessageMapping("/chat/{id}")`的 id 变量。和`@PathVariable`一样
+> 3. 接受完整的`Message`对象，其中包含消息头和消息体消息目标路由等。
 >
 > 详细可以参考[Spring WebSocket](https://docs.spring.io/spring-framework/reference/web/websocket/stomp/handle-annotations.html)
 
@@ -115,8 +111,11 @@ gpt:
     host: localhost
     port: 7890
 ```
+
 引入封装好的OpenAI API。
+
 ```xml
+
 <dependency>
     <groupId>com.theokanning.openai-gpt3-java</groupId>
     <artifactId>service</artifactId>
@@ -377,47 +376,48 @@ npm install @stomp/stompjs ws
 `HomeView.vue`中编写如下的测试代码，先是向后端发起 websocket 连接，如果握手成功则订阅`/user/queue/chatMessage/receive`。
 
 ```html
-<script lang="ts" setup>
-  import { Client } from "@stomp/stompjs";
-  import { ref } from "vue";
 
-  const result = ref("");
-  const prompt = ref("");
-  const client = new Client({
-    brokerURL: "ws://localhost:8080/handshake",
-    onConnect: () => {
-      client.subscribe(
-        "/user/queue/chatMessage/receive",
-        (message) => (result.value += message.body)
-      );
-    },
-  });
-  client.activate();
-  const handleSend = () => {
-    client.publish({
-      destination: "/socket/chatMessage/send",
-      body: JSON.stringify({
-        session: { id: "6495a20647fbac571764c984" },
-        content: prompt.value,
-        role: "user",
-      }),
+<script lang="ts" setup>
+    import {Client} from "@stomp/stompjs";
+    import {ref} from "vue";
+
+    const result = ref("");
+    const prompt = ref("");
+    const client = new Client({
+        brokerURL: "ws://localhost:8080/handshake",
+        onConnect: () => {
+            client.subscribe(
+                    "/user/queue/chatMessage/receive",
+                    (message) => (result.value += message.body)
+            );
+        },
     });
-    result.value = "";
-    prompt.value = "";
-  };
+    client.activate();
+    const handleSend = () => {
+        client.publish({
+            destination: "/socket/chatMessage/send",
+            body: JSON.stringify({
+                session: {id: "6495a20647fbac571764c984"},
+                content: prompt.value,
+                role: "user",
+            }),
+        });
+        result.value = "";
+        prompt.value = "";
+    };
 </script>
 <template>
-  <div>
-    <el-form>
-      <el-form-item label="结果">
-        <el-input v-model="result" type="textarea"></el-input>
-      </el-form-item>
-      <el-form-item label="提问">
-        <el-input v-model="prompt"></el-input>
-      </el-form-item>
-      <el-button type="primary" @click="handleSend">发送</el-button>
-    </el-form>
-  </div>
+    <div>
+        <el-form>
+            <el-form-item label="结果">
+                <el-input v-model="result" type="textarea"></el-input>
+            </el-form-item>
+            <el-form-item label="提问">
+                <el-input v-model="prompt"></el-input>
+            </el-form-item>
+            <el-button type="primary" @click="handleSend">发送</el-button>
+        </el-form>
+    </div>
 </template>
 ```
 

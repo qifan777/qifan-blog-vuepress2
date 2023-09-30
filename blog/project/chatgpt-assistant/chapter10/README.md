@@ -19,8 +19,7 @@
 
 当用户发送完消息等待 ChatGPT 回复的过程中有一些延迟，我们需要写一个文字加载的动画告知用户等待回复。
 
-主要思路是创建三个黑点，然后第一个和第三个同频率的放大缩小且伴随着颜色深淡变化。第二个播放的也是同样的动画，但是慢了
-0.5。这样使得整体有一种波浪感，展现出了加载的效果。
+主要思路是创建三个黑点，然后第一个和第三个同频率的放大缩小且伴随着颜色深淡变化。第二个播放的也是同样的动画，但是慢了0.5。这样使得整体有一种波浪感，展现出了加载的效果。
 
 <center>
 <img src="./loading.gif"/>
@@ -40,45 +39,45 @@
 </template>
 
 <style lang="scss" scoped>
-.loading {
-  // 三个黑点水平展示
-  display: flex;
-  // 三个黑点均匀分布在54px中
-  justify-content: space-around;
-  color: #000;
-  width: 54px;
-  padding: 15px;
+  .loading {
+    // 三个黑点水平展示
+    display: flex;
+    // 三个黑点均匀分布在54px中
+    justify-content: space-around;
+    color: #000;
+    width: 54px;
+    padding: 15px;
 
-  div {
-    background-color: currentColor;
-    border: 0 solid currentColor;
-    width: 5px;
-    height: 5px;
-    // 变成黑色圆点
-    border-radius: 100%;
-    // 播放我们下面定义的动画，每次动画持续0.7s且循环播放。
-    animation: ball-beat 0.7s -0.15s infinite linear;
+    div {
+      background-color: currentColor;
+      border: 0 solid currentColor;
+      width: 5px;
+      height: 5px;
+      // 变成黑色圆点
+      border-radius: 100%;
+      // 播放我们下面定义的动画，每次动画持续0.7s且循环播放。
+      animation: ball-beat 0.7s -0.15s infinite linear;
+    }
+
+    div:nth-child(2n-1) {
+      // 慢0.5秒
+      animation-delay: -0.5s;
+    }
   }
 
-  div:nth-child(2n-1) {
-    // 慢0.5秒
-    animation-delay: -0.5s;
+  // 动画定义
+  @keyframes ball-beat {
+    // 关键帧定义，在50%的时候是颜色变透明，且缩小。
+    50% {
+      opacity: 0.2;
+      transform: scale(0.75);
+    }
+    // 在100%时是回到正常状态，浏览器会自动在这两个关键帧间平滑过渡。
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
-}
-
-// 动画定义
-@keyframes ball-beat {
-  // 关键帧定义，在50%的时候是颜色变透明，且缩小。
-  50% {
-    opacity: 0.2;
-    transform: scale(0.75);
-  }
-  // 在100%时是回到正常状态，浏览器会自动在这两个关键帧间平滑过渡。
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 </style>
 
 ```
@@ -120,24 +119,22 @@ app
     .component("MdPreview", MdPreview);
 ```
 
-消息展示从角色上可以分为 `User`代表用户发送的消息，应该显示在右侧。角色为`Assistant`
-代表 ChatGPT 回复的消息，因此显示在左侧。除了位置不同之外，头像也有差别。用户发送的消息显示用户的头像，ChatGPT 回复的消息显示的是
-LOGO。
+消息展示从角色上可以分为 `User`代表用户发送的消息，应该显示在右侧。角色为`Assistant`代表 ChatGPT 回复的消息，因此显示在左侧。除了位置不同之外，头像也有差别。用户发送的消息显示用户的头像，ChatGPT 回复的消息显示的是LOGO。
 
 新建`home/components/MessageRow.vue`
 
 ```vue
 
 <script lang="ts" setup>
-import {PropType} from "vue";
-import {ChatMessage} from "../../../../typings";
+  import {PropType} from "vue";
+  import {ChatMessage} from "../../../../typings";
 
-// message：接受消息对象，展示消息内容和头像，并且根据角色调整消息位置。
-// avatar：用户头像，如果角色是 Assistant则使用 logo。
-const props = defineProps({
-  message: {type: Object as PropType<ChatMessage>, required: true},
-  avatar: {type: String, default: "https://www.jarcheng.top/images/logo.jpg"},
-});
+  // message：接受消息对象，展示消息内容和头像，并且根据角色调整消息位置。
+  // avatar：用户头像，如果角色是 Assistant则使用 logo。
+  const props = defineProps({
+    message: {type: Object as PropType<ChatMessage>, required: true},
+    avatar: {type: String, default: "https://www.jarcheng.top/images/logo.jpg"},
+  });
 </script>
 
 <!-- 整个div是用来调整内部消息的位置，每条消息占的空间都是一整行，然后根据right还是left来调整内部的消息是靠右边还是靠左边 -->
@@ -176,59 +173,59 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-.message-row {
-  display: flex;
+  .message-row {
+    display: flex;
 
-  &.right {
-    // 消息显示在右侧
-    justify-content: flex-end;
+    &.right {
+      // 消息显示在右侧
+      justify-content: flex-end;
 
+      .row {
+        // 头像也要靠右侧
+        .avatar-wrapper {
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        // 用户回复的消息和ChatGPT回复的消息背景颜色做区分
+        .message {
+          background-color: rgb(231, 248, 255);
+        }
+      }
+    }
+
+    // 默认靠左边显示
     .row {
-      // 头像也要靠右侧
       .avatar-wrapper {
-        display: flex;
-        justify-content: flex-end;
+        .avatar {
+          box-shadow: 20px 20px 20px 3px rgba(0, 0, 0, 0.03);
+          margin-bottom: 20px;
+        }
       }
 
-      // 用户回复的消息和ChatGPT回复的消息背景颜色做区分
       .message {
-        background-color: rgb(231, 248, 255);
+        font-size: 15px;
+        padding: 1.5px;
+        // 限制消息展示的最大宽度
+        max-width: 500px;
+        // 圆润一点
+        border-radius: 7px;
+        // 给消息框加一些描边，看起来更加实一些，要不然太扁了轻飘飘的。
+        border: 1px solid rgba(black, 0.1);
+        // 增加一些阴影看起来更加立体
+        box-shadow: 20px 20px 20px 1px rgba(0, 0, 0, 0.01);
       }
     }
   }
 
-  // 默认靠左边显示
-  .row {
-    .avatar-wrapper {
-      .avatar {
-        box-shadow: 20px 20px 20px 3px rgba(0, 0, 0, 0.03);
-        margin-bottom: 20px;
-      }
-    }
+  // 调整markdown组件的一些样式，deep可以修改组件内的样式，正常情况是scoped只能修改本组件的样式。
+  :deep(.md-editor-preview-wrapper) {
+    padding: 0 10px;
 
-    .message {
-      font-size: 15px;
-      padding: 1.5px;
-      // 限制消息展示的最大宽度
-      max-width: 500px;
-      // 圆润一点
-      border-radius: 7px;
-      // 给消息框加一些描边，看起来更加实一些，要不然太扁了轻飘飘的。
-      border: 1px solid rgba(black, 0.1);
-      // 增加一些阴影看起来更加立体
-      box-shadow: 20px 20px 20px 1px rgba(0, 0, 0, 0.01);
+    .smart-blue-theme p {
+      line-height: unset;
     }
   }
-}
-
-// 调整markdown组件的一些样式，deep可以修改组件内的样式，正常情况是scoped只能修改本组件的样式。
-:deep(.md-editor-preview-wrapper) {
-  padding: 0 10px;
-
-  .smart-blue-theme p {
-    line-height: unset;
-  }
-}
 </style>
 ```
 
@@ -276,19 +273,19 @@ const props = defineProps({
 ```vue
 
 <script lang="ts" setup>
-import {ref} from "vue";
+  import {ref} from "vue";
 
-// 发送消息消息事件
-const emit = defineEmits<{
-  send: [message: string];
-}>();
-// 输入框内的消息
-const message = ref("");
-const sendMessage = () => {
-  emit("send", message.value);
-  // 发送完清除
-  message.value = "";
-};
+  // 发送消息消息事件
+  const emit = defineEmits<{
+    send: [message: string];
+  }>();
+  // 输入框内的消息
+  const message = ref("");
+  const sendMessage = () => {
+    emit("send", message.value);
+    // 发送完清除
+    message.value = "";
+  };
 </script>
 
 <template>
@@ -318,20 +315,20 @@ const sendMessage = () => {
 </template>
 
 <style lang="scss" scoped>
-.message-input {
-  padding: 20px;
-  border-top: 1px solid rgba(black, 0.07);
-  border-left: 1px solid rgba(black, 0.07);
-  border-right: 1px solid rgba(black, 0.07);
-  border-top-right-radius: 5px;
-  border-top-left-radius: 5px;
-}
+  .message-input {
+    padding: 20px;
+    border-top: 1px solid rgba(black, 0.07);
+    border-left: 1px solid rgba(black, 0.07);
+    border-right: 1px solid rgba(black, 0.07);
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+  }
 
-.button-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
+  .button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
 </style>
 ```
 
@@ -344,47 +341,47 @@ const sendMessage = () => {
 ```vue
 
 <script lang="ts" setup>
-// 省略
-// 连接后端的websocekt服务
-const client = new Client({
-  brokerURL: "ws://localhost:8080/handshake",
-  onConnect: () => {
-    // 连接成功后订阅ChatGPT回复地址
-    client.subscribe("/user/queue/chatMessage/receive", (message) => {
-      // 将每次回复的结果追加到回复结果中
-      responseMessage.value.content += message.body;
-      console.log(message.body);
-    });
-  },
-});
-// 发起连接
-client.activate();
-// ChatGPT的回复
-const responseMessage = ref({} as ChatMessage);
-const handleSendMessage = (message: string) => {
-  // 新建一个ChatGPT回复对象，不能重复使用同一个对象。
-  responseMessage.value = {
-    role: "assistant",
-    content: "",
-    // 因为回复的消息没有id，所以统一将创建时间+index当作key
-    createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-  } as ChatMessage;
-  // 用户的提问
-  const chatMessage = {
-    session: Object.assign({}, activeSession.value),
-    content: message,
-    role: "user",
-    createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-  } as ChatMessage;
-  // 防止循环依赖，会导致json序列化失败
-  chatMessage.session.messages = [];
-  client.publish({
-    destination: "/socket/chatMessage/send",
-    body: JSON.stringify(chatMessage),
+  // 省略
+  // 连接后端的websocekt服务
+  const client = new Client({
+    brokerURL: "ws://localhost:8080/handshake",
+    onConnect: () => {
+      // 连接成功后订阅ChatGPT回复地址
+      client.subscribe("/user/queue/chatMessage/receive", (message) => {
+        // 将每次回复的结果追加到回复结果中
+        responseMessage.value.content += message.body;
+        console.log(message.body);
+      });
+    },
   });
-  // 将两条消息显示在页面中
-  activeSession.value.messages.push(...[chatMessage, responseMessage.value]);
-};
+  // 发起连接
+  client.activate();
+  // ChatGPT的回复
+  const responseMessage = ref({} as ChatMessage);
+  const handleSendMessage = (message: string) => {
+    // 新建一个ChatGPT回复对象，不能重复使用同一个对象。
+    responseMessage.value = {
+      role: "assistant",
+      content: "",
+      // 因为回复的消息没有id，所以统一将创建时间+index当作key
+      createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+    } as ChatMessage;
+    // 用户的提问
+    const chatMessage = {
+      session: Object.assign({}, activeSession.value),
+      content: message,
+      role: "user",
+      createdAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+    } as ChatMessage;
+    // 防止循环依赖，会导致json序列化失败
+    chatMessage.session.messages = [];
+    client.publish({
+      destination: "/socket/chatMessage/send",
+      body: JSON.stringify(chatMessage),
+    });
+    // 将两条消息显示在页面中
+    activeSession.value.messages.push(...[chatMessage, responseMessage.value]);
+  };
 </script>
 <template>
   <div class="home-view">
@@ -411,39 +408,39 @@ const handleSendMessage = (message: string) => {
   </div>
 </template>
 <style lang="scss" scoped>
-.home-view {
-  // 省略...
-  .chat-panel {
+  .home-view {
     // 省略...
-
-    /* 右侧消息记录面板*/
-    .message-panel {
-      width: 700px;
-      // 这边删除掉高度 height
-      // height: 800px
-
+    .chat-panel {
       // 省略...
 
-      .message-list {
-        height: 700px;
-        padding: 15px;
-        // 消息条数太多时，溢出部分滚动
-        overflow-y: scroll;
-        // 当切换聊天会话时，消息记录也随之切换的过渡效果
-        .list-enter-active,
-        .list-leave-active {
-          transition: all 0.5s ease;
-        }
+      /* 右侧消息记录面板*/
+      .message-panel {
+        width: 700px;
+        // 这边删除掉高度 height
+        // height: 800px
 
-        .list-enter-from,
-        .list-leave-to {
-          opacity: 0;
-          transform: translateX(30px);
+        // 省略...
+
+        .message-list {
+          height: 700px;
+          padding: 15px;
+          // 消息条数太多时，溢出部分滚动
+          overflow-y: scroll;
+          // 当切换聊天会话时，消息记录也随之切换的过渡效果
+          .list-enter-active,
+          .list-leave-active {
+            transition: all 0.5s ease;
+          }
+
+          .list-enter-from,
+          .list-leave-to {
+            opacity: 0;
+            transform: translateX(30px);
+          }
         }
       }
     }
   }
-}
 </style>
 ```
 

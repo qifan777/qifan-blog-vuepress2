@@ -5,6 +5,7 @@ tag:
   - ORM
   - JPA
   - Hibernate
+  - JPA建模
 date: 2023-03-01
 timeline: true
 ---
@@ -182,7 +183,7 @@ class Name {
 ### 1.2.1 枚举类型
 
 ```java
-public enum PhoneType {
+public enum AddressType {
   LAND_LINE,
   MOBILE;
 }
@@ -191,34 +192,34 @@ public enum PhoneType {
 ***@Enumerated(ORDINAL)***
 
 ```java
-@Entity(name = "Phone")
-public static class Phone {
+@Entity(name = "Address")
+public static class Address {
 
   @Id
   private Long id;
 
-  @Column(name = "phone_number")
+  @Column(name = "Address_number")
   private String number;
 
   @Enumerated(EnumType.ORDINAL)
-  @Column(name = "phone_type")
-  private PhoneType type;
+  @Column(name = "Address_type")
+  private AddressType type;
 }
 ```
 
 当我们插入Java对象到数据库时，hibernate生成下面的sql语句。
-可以看见 `PhoneType.MOBILE` 映射到 `1`。@Enumerated(EnumType.ORDINAL)指定枚举到数据库的映射规则是按顺序。MOBILE在PhoneType中的顺序是1，所以就得到了1。
+可以看见 `AddressType.MOBILE` 映射到 `1`。@Enumerated(EnumType.ORDINAL)指定枚举到数据库的映射规则是按顺序。MOBILE在AddressType中的顺序是1，所以就得到了1。
 
 ```java
-Phone phone=new Phone();
-phone.setId(1L);
-phone.setNumber("123-456-78990");
-phone.setType(PhoneType.MOBILE);
-entityManager.persist(phone)
+Address Address=new Address();
+Address.setId(1L);
+Address.setNumber("123-456-78990");
+Address.setType(AddressType.MOBILE);
+entityManager.persist(Address)
 ```
 
 ```sql
-INSERT INTO Phone (phone_number, phone_type, id)
+INSERT INTO Address (Address_number, Address_type, id)
 VALUES ('123-456-78990', 1, 1)
 ```
 
@@ -230,18 +231,18 @@ VALUES ('123-456-78990', 1, 1)
 
 ```java
 @Enumerated(EnumType.STRING)
-@Column(name = "phone_type")
-private PhoneType type;
+@Column(name = "Address_type")
+private AddressType type;
 ```
 
 插入上面的例子到数据库，会生成下面的sql语句
 
 ```sql
-INSERT INTO Phone (phone_number, phone_type, id)
+INSERT INTO Address (Address_number, Address_type, id)
 VALUES ('123-456-78990', 'MOBILE', 1)
 ```
 
-`PhoneType.MOBILE`变成了 `'MOBILE'`字符串。
+`AddressType.MOBILE`变成了 `'MOBILE'`字符串。
 
 ### 1.2.2 Boolean
 
@@ -336,7 +337,7 @@ private LocalDateTime timestamp;
 
 ```java
 public enum UserType {
-  PERSON(1, "个人"),
+  User(1, "个人"),
   ENTERPRISE(2, "企业");
   private final Integer code;
   private final String name;
@@ -415,14 +416,14 @@ private UserType userType;
 User user = new User()
 .setName("起凡")
 .setCreateTime(LocalDateTime.now())
-.setUserType(UserType.PERSON);
-// 将UserType.PERSON 转成 字符串
+.setUserType(UserType.User);
+// 将UserType.User 转成 字符串
 // insert into user (create_time, name, user_type) values (2022-12-04 11:38:46, '起凡', '个人')
 userRepository.save(user);
 
 userRepository.findUserByNameIs("起凡")
 .ifPresent(res-> {
-// 在数据库从字符串变成 UserType.PERSON。
+// 在数据库从字符串变成 UserType.User。
    log.info(res.getUserType()
    .getCode()
    .toString());
@@ -602,7 +603,7 @@ public class Dependent {
 
 如何判断父实体和子实体呢？答：通过关系的拥有方来判断。
 如何判断谁是关系的拥有方呢？答：通过外键来判断。
-如：Person拥有多个Phone，Phone对应一个Person。很明显外键person_id是在Phone中，那Phone就是关系的拥有方，所以它是子实体。关系的反方显然就是Person，所以它是父实体。
+如：User拥有多个Address，Address对应一个User。很明显外键user_id是在Address中，那Address就是关系的拥有方，所以它是子实体。关系的反方显然就是User，所以它是父实体。
 
 ### @ManyToOne
 
@@ -611,85 +612,102 @@ public class Dependent {
 *@ManyToOne*案例
 
 ```java
-@Entity(name = "Person")
-public static class Person {
+@Entity
+@Accessors(chain = true)
+@Table(name = "USER")
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+public class User extends BaseEntity {
 
-  @Id
-  @GeneratedValue
-  private Long id;
+  private String nickname;
 
-  //Getters and setters are omitted for brevity
+  private String avatar;
 
-}
-
-@Entity(name = "Phone")
-public static class Phone {
-
-  @Id
-  @GeneratedValue
-  private Long id;
-
-  @Column(name = "`number`")
-  private String number;
-
-  @ManyToOne
-  @JoinColumn(name = "person_id")
-  private Person person;
-
-  //Getters and setters are omitted for brevity
-
+  @Convert(converter = GenderTypeConverter.class)
+  private GenderType gender;
+  
+  @OneToMany
+  @ToString.Exclude
+  public List<Address> addresses;
 }
 ```
-
-关联phone和person
 
 ```java
-// 新增Person记录
-Person person=new Person();
-entityManager.persist(person);
+@Entity
+@Accessors(chain = true)
+@Table(name = "ADDRESS")
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+public class Address extends BaseEntity {
 
-Phone phone=new Phone("123-456-7890");
-// 将phone关联已存在的person
-phone.setPerson(person);
-// 插入到数据库
-entityManager.persist(phone);
-entityManager.flush();
-phone.setPerson(null);
-entityManager.persist(phone);
-entityManager.flush();
+  // 门牌号
+  private String houseNumber;
+  // 地址详情
+  private String details;
+  // 街道/区
+  private String district;
+  // 城市
+  private String city;
+  // 省份
+  private String province;
+  // 维度
+  private Double latitude;
+  // 经度
+  private Double longitude;
+  // 手机号
+  private String AddressNumber;
+  // 姓名
+  private String realName;
+  // 地址创建人
+  @ManyToOne
+  private User user;
+
+}
+
+
 ```
 
-生成对应的SQL
+新增Address，需要关已有的User。
 
-```sql
-INSERT INTO Person (id)
-VALUES (1)
-
-INSERT
-INTO Phone (number, person_id, id)
-VALUES ( '123-456-7890', 1, 2 )
-
-UPDATE Phone
-SET number    = '123-456-7890',
-    person_id = NULL
-WHERE id = 2
+```java
+  @Test
+  public void manyToOneTest() {
+    Address address = new Address().setProvince("河南省").setCity("南阳市").setDistrict("方城县")
+        .setDetails("友谊路")
+        .setHouseNumber("976")
+        .setAddressNumber("+86 13686863075")
+        .setRealName("罗富财");
+    Address address2 = new Address().setProvince("陕西省").setCity("汉中市").setDistrict("城固县")
+        .setDetails("丹景山路")
+        .setHouseNumber("29")
+        .setAddressNumber("+86 13686863075")
+        .setRealName("罗富财");
+    User user = entityManager.find(User.class, "1");
+    address.setUser(user);
+    address2.setUser(user);
+    entityManager.persist(address);
+    entityManager.persist(address2);
+  }
 ```
 
 ::: tip
 
 ```java
 @ManyToOne
-@JoinColumn(name = "person_id")
-private Person person;
+private User user;
 ```
 
-使用过MyBatis的人对于JPA的关系映射一开始肯定有些迷糊。这里的Person为什么可以映射到数据库中的person_id呢？Person明明是一个实体类，而person_id是一个varchar/int等类型。
-你可以观察一下上面的SQL语句。在新增phone时，person_id的值就是person对象的id。所以其实本质上还是Person实体类的id映射到person_id。
+使用过MyBatis的人对于JPA的关系映射一开始肯定有些迷糊。这里的User为什么可以映射到数据库中的User呢？User明明是一个实体类，而user_id是一个varchar/int等类型。
+你可以观察一下上面的SQL语句。在新增address时，User_id的值就是User对象的id。所以其实本质上还是User实体类的id映射到User_id。
 :::
 
 ### @OneToMany
 
-之前说了Person可以关联多个Phone。可以使用 `@OneToMany`来管理所有的子实体。 在使用 `@OneToMany`时有两种情况：
+之前说了User可以关联多个Address。可以使用 `@OneToMany`来管理所有的子实体。 在使用 `@OneToMany`时有两种情况：
 
 - 第一种情况是子实体有 `@ManyToOne`此时建立起的联系bidirectional（双向）.
 - 第二种情况是子实体没有 `@ManyToOne`，这种情况 `@OneToMany`建立起的关联是unidirectional（单向）。（建议不要使用这种关联）
@@ -703,46 +721,46 @@ Bidirectional `@OneToMany` 顾名思义它需要同时存在 `owning side`（子
 ::: tip
 
 ```java
-@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+@OneToMany(mappedBy = "User", cascade = CascadeType.ALL, orphanRemoval = true)
 ```
 
-- mappedBy：的意思是子实体通过person关联到父实体，这样就可以知道子实体的外键字段是什么。正如我们手写sql一样，如果需要查询Person拥有的Phone显然需要知道Phone里面的外键是这么。
+- mappedBy：的意思是子实体通过User关联到父实体，这样就可以知道子实体的外键字段是什么。正如我们手写sql一样，如果需要查询User拥有的Address显然需要知道Address里面的外键是这么。
 
 ```sql
-select * from person t1 left join phone t2 on t1.id=t2.person_id --外键 person_id
+select * from User t1 left join Address t2 on t1.id=t2.User_id --外键 User_id
 ```
 
 - cascade：CascadeType.ALL就是代表级联触发所有的操作。在关联中只有父实体可以级联更新/删除/创建子实体，反之不行。
-- orphanRemoval：的意思是当你更改phones数组内的Phone后，保存到数据库数据库也会删除掉子实体。参考下面的案例就理解了。
+- orphanRemoval：的意思是当你更改Addresss数组内的Address后，保存到数据库数据库也会删除掉子实体。参考下面的案例就理解了。
 
 :::
 
 ```java
-@Entity(name = "Person")
-public static class Person {
+@Entity(name = "User")
+public static class User {
 
 	@Id
 	@GeneratedValue
 	private Long id;
 
-	@OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Phone> phones = new ArrayList<>();
+	@OneToMany(mappedBy = "User", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Address> Addresss = new ArrayList<>();
 
 	//Getters and setters are omitted for brevity
 
-	public void addPhone(Phone phone) {
-		phones.add(phone);
-		phone.setPerson(this);
+	public void addAddress(Address Address) {
+		Addresss.add(Address);
+		Address.setUser(this);
 	}
 
-	public void removePhone(Phone phone) {
-		phones.remove(phone);
-		phone.setPerson(null);
+	public void removeAddress(Address Address) {
+		Addresss.remove(Address);
+		Address.setUser(null);
 	}
 }
 
-@Entity(name = "Phone")
-public static class Phone {
+@Entity(name = "Address")
+public static class Address {
 
 	@Id
 	@GeneratedValue
@@ -752,10 +770,10 @@ public static class Phone {
 	@Column(name = "`number`", unique = true)
 	private String number;
 
-	// 可以不写@JoinColumn，默认会以person_id作为外键。
+	// 可以不写@JoinColumn，默认会以User_id作为外键。
 	// 关联父实体
 	@ManyToOne
-	private Person person;
+	private User User;
 
 	//Getters and setters are omitted for brevity
 
@@ -767,8 +785,8 @@ public static class Phone {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		Phone phone = (Phone) o;
-		return Objects.equals(number, phone.number);
+		Address Address = (Address) o;
+		return Objects.equals(number, Address.number);
 	}
 
 	@Override
@@ -778,38 +796,38 @@ public static class Phone {
 }
 ```
 
-将两个phone对象和person对象关联，插入person到数据库时，会将两个phone对象一起级联插入到数据库。随后删除其中一个phone对象和person对象的关联。
+将两个Address对象和User对象关联，插入User到数据库时，会将两个Address对象一起级联插入到数据库。随后删除其中一个Address对象和User对象的关联。
 
 ```java
-Person person = new Person();
-Phone phone1 = new Phone("123-456-7890");
-Phone phone2 = new Phone("321-654-0987");
-// 项数组内增加phone，当将person插入到数据库时会触发级联操作CascadeType.ALL将phones也一起插入到数据库
-person.addPhone(phone1);
-person.addPhone(phone2);
-entityManager.persist(person);
+User User = new User();
+Address Address1 = new Address("123-456-7890");
+Address Address2 = new Address("321-654-0987");
+// 项数组内增加Address，当将User插入到数据库时会触发级联操作CascadeType.ALL将Addresss也一起插入到数据库
+User.addAddress(Address1);
+User.addAddress(Address2);
+entityManager.persist(User);
 entityManager.flush();
 
-// 数组内删除了phone1，由于配置了orphanRemoval，所以更新person时会触发删除操作。
-person.removePhone(phone1);
-entityManager.persist(person);
+// 数组内删除了Address1，由于配置了orphanRemoval，所以更新User时会触发删除操作。
+User.removeAddress(Address1);
+entityManager.persist(User);
 entityManager.flush();
 ```
 
 ```sql
-INSERT INTO Person
+INSERT INTO User
        ( id )
 VALUES ( 1 )
 
-INSERT INTO Phone
-       ( "number", person_id, id )
+INSERT INTO Address
+       ( "number", User_id, id )
 VALUES ( '123-456-7890', 1, 2 )
 
-INSERT INTO Phone
-       ( "number", person_id, id )
+INSERT INTO Address
+       ( "number", User_id, id )
 VALUES ( '321-654-0987', 1, 3 )
 
-DELETE FROM Phone
+DELETE FROM Address
 WHERE  id = 2
 ```
 
@@ -819,13 +837,13 @@ WHERE  id = 2
 
 *Unidirectional `@OneToOne`*
 
-下面的Phone关联了PhoneDetails，在PhoneDetails并没有 `@OneToOne`。在Phone里面 `@OneToOne`映射到了外键details_id，这种就属于单向关系。
+下面的Address关联了AddressDetails，在AddressDetails并没有 `@OneToOne`。在Address里面 `@OneToOne`映射到了外键details_id，这种就属于单向关系。
 
-在一对一的关联中，外键放在哪一边比较合适是新手比较少思考的问题。在这个例子里面我的推荐是放在PhoneDetails，因为PhoneDetails无法脱离Phone而存在，所以它适合作为子实体，Phone做为父实体。
+在一对一的关联中，外键放在哪一边比较合适是新手比较少思考的问题。在这个例子里面我的推荐是放在AddressDetails，因为AddressDetails无法脱离Address而存在，所以它适合作为子实体，Address做为父实体。
 
 ```java
-@Entity(name = "Phone")
-public static class Phone {
+@Entity(name = "Address")
+public static class Address {
 
 	@Id
 	@GeneratedValue
@@ -836,14 +854,14 @@ public static class Phone {
 
 	@OneToOne
 	@JoinColumn(name = "details_id")
-	private PhoneDetails details;
+	private AddressDetails details;
 
 	//Getters and setters are omitted for brevity
 
 }
 
-@Entity(name = "PhoneDetails")
-public static class PhoneDetails {
+@Entity(name = "AddressDetails")
+public static class AddressDetails {
 
 	@Id
 	@GeneratedValue
@@ -860,11 +878,11 @@ public static class PhoneDetails {
 
 *Bidirectional @OneToOne*
 
-可以看见现在外键phone_id是在PhoneDetails，同时Phone里面也多了 `@OneToOne`关联子实体，形成了双向关联。
+可以看见现在外键Address_id是在AddressDetails，同时Address里面也多了 `@OneToOne`关联子实体，形成了双向关联。
 
 ```java
-@Entity(name = "Phone")
-public static class Phone {
+@Entity(name = "Address")
+public static class Address {
 
 	@Id
 	@GeneratedValue
@@ -874,29 +892,29 @@ public static class Phone {
 	private String number;
 
 	@OneToOne(
-		mappedBy = "phone",
+		mappedBy = "Address",
 		cascade = CascadeType.ALL,
 		orphanRemoval = true
 	)
-	private PhoneDetails details;
+	private AddressDetails details;
 
 	//Getters and setters are omitted for brevity
 
-	public void addDetails(PhoneDetails details) {
-		details.setPhone(this);
+	public void addDetails(AddressDetails details) {
+		details.setAddress(this);
 		this.details = details;
 	}
 
 	public void removeDetails() {
 		if (details != null) {
-			details.setPhone(null);
+			details.setAddress(null);
 			this.details = null;
 		}
 	}
 }
 
-@Entity(name = "PhoneDetails")
-public static class PhoneDetails {
+@Entity(name = "AddressDetails")
+public static class AddressDetails {
 
 	@Id
 	@GeneratedValue
@@ -908,8 +926,8 @@ public static class PhoneDetails {
 
 	@OneToOne
 	// 可以不写@JoinColumn
-	@JoinColumn(name = "phone_id")
-	private Phone phone;
+	@JoinColumn(name = "Address_id")
+	private Address Address;
 
 	//Getters and setters are omitted for brevity
 
@@ -917,30 +935,30 @@ public static class PhoneDetails {
 ```
 
 ```java
-Phone phone = new Phone("123-456-7890");
-PhoneDetails details = new PhoneDetails("T-Mobile", "GSM");
+Address Address = new Address("123-456-7890");
+AddressDetails details = new AddressDetails("T-Mobile", "GSM");
 
-phone.addDetails(details);
-entityManager.persist(phone);
+Address.addDetails(details);
+entityManager.persist(Address);
 ```
 
 ```sql
-INSERT INTO Phone ( number, id )
+INSERT INTO Address ( number, id )
 VALUES ( '123-456-7890', 1 )
 
-INSERT INTO PhoneDetails ( phone_id, provider, technology, id )
+INSERT INTO AddressDetails ( Address_id, provider, technology, id )
 VALUES ( 1, 'T-Mobile', 'GSM', 2 )
 ```
 
 ### @ManyToMany
 
-@ManyToMany不够灵活性能也比较差。 建议使用@OneToMany关联中间表。PersonAddress是Person和Address的中间表。
+@ManyToMany不够灵活性能也比较差。 建议使用@OneToMany关联中间表。UserAddress是User和Address的中间表。
 
 这样你可以随时向中间表添加字段，使用@ManyToMany就没有办法了。
 
 ```java
-@Entity(name = "Person")
-public static class Person implements Serializable {
+@Entity(name = "User")
+public static class User implements Serializable {
 
 	@Id
 	@GeneratedValue
@@ -950,26 +968,26 @@ public static class Person implements Serializable {
 	private String registrationNumber;
 
 	@OneToMany(
-		mappedBy = "person",
+		mappedBy = "User",
 		cascade = CascadeType.ALL,
 		orphanRemoval = true
 	)
-	private List<PersonAddress> addresses = new ArrayList<>();
+	private List<UserAddress> addresses = new ArrayList<>();
 
 	//Getters and setters are omitted for brevity
 
 	public void addAddress(Address address) {
-		PersonAddress personAddress = new PersonAddress(this, address);
-		addresses.add(personAddress);
-		address.getOwners().add(personAddress);
+		UserAddress UserAddress = new UserAddress(this, address);
+		addresses.add(UserAddress);
+		address.getOwners().add(UserAddress);
 	}
 
 	public void removeAddress(Address address) {
-		PersonAddress personAddress = new PersonAddress(this, address);
-		address.getOwners().remove(personAddress);
-		addresses.remove(personAddress);
-		personAddress.setPerson(null);
-		personAddress.setAddress(null);
+		UserAddress UserAddress = new UserAddress(this, address);
+		address.getOwners().remove(UserAddress);
+		addresses.remove(UserAddress);
+		UserAddress.setUser(null);
+		UserAddress.setAddress(null);
 	}
 
 	@Override
@@ -980,8 +998,8 @@ public static class Person implements Serializable {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		Person person = (Person) o;
-		return Objects.equals(registrationNumber, person.registrationNumber);
+		User User = (User) o;
+		return Objects.equals(registrationNumber, User.registrationNumber);
 	}
 
 	@Override
@@ -990,12 +1008,12 @@ public static class Person implements Serializable {
 	}
 }
 
-@Entity(name = "PersonAddress")
-public static class PersonAddress implements Serializable {
+@Entity(name = "UserAddress")
+public static class UserAddress implements Serializable {
 
 	@Id
 	@ManyToOne
-	private Person person;
+	private User User;
 
 	@Id
 	@ManyToOne
@@ -1011,14 +1029,14 @@ public static class PersonAddress implements Serializable {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		PersonAddress that = (PersonAddress) o;
-		return Objects.equals(person, that.person) &&
+		UserAddress that = (UserAddress) o;
+		return Objects.equals(User, that.User) &&
 				Objects.equals(address, that.address);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(person, address);
+		return Objects.hash(User, address);
 	}
 }
 
@@ -1041,7 +1059,7 @@ public static class Address implements Serializable {
 		cascade = CascadeType.ALL,
 		orphanRemoval = true
 	)
-	private List<PersonAddress> owners = new ArrayList<>();
+	private List<UserAddress> owners = new ArrayList<>();
 
 	//Getters and setters are omitted for brevity
 
