@@ -627,10 +627,6 @@ public class User extends BaseEntity {
 
   @Convert(converter = GenderTypeConverter.class)
   private GenderType gender;
-  
-  @OneToMany
-  @ToString.Exclude
-  public List<Address> addresses;
 }
 ```
 
@@ -701,8 +697,7 @@ public class Address extends BaseEntity {
 private User user;
 ```
 
-使用过MyBatis的人对于JPA的关系映射一开始肯定有些迷糊。这里的User为什么可以映射到数据库中的User呢？User明明是一个实体类，而user_id是一个varchar/int等类型。
-你可以观察一下上面的SQL语句。在新增address时，User_id的值就是User对象的id。所以其实本质上还是User实体类的id映射到User_id。
+这里的user映射到数据库的user_id（外键），当插入address到数据库时Hibernate会从user对象中获得id值。
 :::
 
 ### @OneToMany
@@ -721,114 +716,53 @@ Bidirectional `@OneToMany` 顾名思义它需要同时存在 `owning side`（子
 ::: tip
 
 ```java
-@OneToMany(mappedBy = "User", cascade = CascadeType.ALL, orphanRemoval = true)
+@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 ```
 
-- mappedBy：的意思是子实体通过User关联到父实体，这样就可以知道子实体的外键字段是什么。正如我们手写sql一样，如果需要查询User拥有的Address显然需要知道Address里面的外键是这么。
+- mappedBy：的意思是子实体通过User关联到父实体，这样就可以知道子实体的外键字段是什么。正如我们手写sql一样，如果需要查询User拥有的Address显然需要知道Address里面的外键是什么。
 
 ```sql
-select * from User t1 left join Address t2 on t1.id=t2.User_id --外键 User_id
+select * from user t1 left join address t2 on t1.id=t2.user_id --外键 user_id
 ```
 
 - cascade：CascadeType.ALL就是代表级联触发所有的操作。在关联中只有父实体可以级联更新/删除/创建子实体，反之不行。
-- orphanRemoval：的意思是当你更改Addresss数组内的Address后，保存到数据库数据库也会删除掉子实体。参考下面的案例就理解了。
+- orphanRemoval：的意思是当减少addresses数组后，保存到数据库数据库也会删除掉子实体。参考下面的案例就理解了。
 
 :::
 
 ```java
-@Entity(name = "User")
-public static class User {
+@Entity
+@Accessors(chain = true)
+@Table(name = "USER")
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+public class User extends BaseEntity {
 
-	@Id
-	@GeneratedValue
-	private Long id;
+  // 忽略...
 
-	@OneToMany(mappedBy = "User", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Address> Addresss = new ArrayList<>();
-
-	//Getters and setters are omitted for brevity
-
-	public void addAddress(Address Address) {
-		Addresss.add(Address);
-		Address.setUser(this);
-	}
-
-	public void removeAddress(Address Address) {
-		Addresss.remove(Address);
-		Address.setUser(null);
-	}
+  @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+  @ToString.Exclude
+  public List<Address> addresses;
 }
 
-@Entity(name = "Address")
-public static class Address {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-	// 手机号在生活中不会重复，这种属于自然id，也可以唯一标识一行记录
-	@NaturalId
-	@Column(name = "`number`", unique = true)
-	private String number;
-
-	// 可以不写@JoinColumn，默认会以User_id作为外键。
-	// 关联父实体
-	@ManyToOne
-	private User User;
-
-	//Getters and setters are omitted for brevity
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		Address Address = (Address) o;
-		return Objects.equals(number, Address.number);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(number);
-	}
-}
 ```
-
-将两个Address对象和User对象关联，插入User到数据库时，会将两个Address对象一起级联插入到数据库。随后删除其中一个Address对象和User对象的关联。
-
+ 
 ```java
-User User = new User();
-Address Address1 = new Address("123-456-7890");
-Address Address2 = new Address("321-654-0987");
-// 项数组内增加Address，当将User插入到数据库时会触发级联操作CascadeType.ALL将Addresss也一起插入到数据库
-User.addAddress(Address1);
-User.addAddress(Address2);
-entityManager.persist(User);
-entityManager.flush();
-
-// 数组内删除了Address1，由于配置了orphanRemoval，所以更新User时会触发删除操作。
-User.removeAddress(Address1);
-entityManager.persist(User);
-entityManager.flush();
-```
-
-```sql
-INSERT INTO User
-       ( id )
-VALUES ( 1 )
-
-INSERT INTO Address
-       ( "number", User_id, id )
-VALUES ( '123-456-7890', 1, 2 )
-
-INSERT INTO Address
-       ( "number", User_id, id )
-VALUES ( '321-654-0987', 1, 3 )
-
-DELETE FROM Address
-WHERE  id = 2
+  @Test
+  public void oneToMany() {
+    deleteAddress();
+    User user = entityManager.find(User.class, "1");
+    address.setUser(user);
+    address2.setUser(user);
+    // 增加列表
+    user.getAddresses().add(address);
+    user.getAddresses().add(address2);
+    // 保存user到数据库时会级联创建列表内的address。
+    entityManager.persist(user);
+  }
 ```
 
 ### @OneToOne
