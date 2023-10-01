@@ -14,6 +14,8 @@ order: 2
 
 # 2. 动态SQL（Criteria）
 
+[GitHub链接](https://github.com/qifan777/JPA-Hibernate-SpringDataJPA)
+
 在JPA中写SQL三种方式
 
 - JPQL
@@ -140,7 +142,7 @@ where
 最后再select需要的数据`query.select(u.get(User_.id))`转成JPQL是`select u.id`
 
 :::info
-上面例子中的User_, UserPhonePassword_, UserWeChat_都是自动生成的类。UserWeChat_.openId就是相当于字符串"openId"。主要作用就是防止你直接在代码里面写死字符串，到时候实体类的属性变化时不能即使发现bug。
+上面例子中的User_, UserPhonePassword_, UserWeChat_都是自动生成的类。UserWeChat_.openId就是相当于字符串"openId"。主要作用就是防止你直接在代码里面写死字符串，到时候实体类的属性变化时不能及时发现bug。
 :::
 
 ## Select

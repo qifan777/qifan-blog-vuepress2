@@ -9,7 +9,8 @@ date: 2023-03-01
 timeline: true
 ---
 
-如何使用Hibernate进行Java到数据库的映射。映射完后程序员只需针对Java的对象进行操作就可以实现增删改查。因此如何用Hibernate建模是一个值得深入学习的内容，它主要影响的就是create table xxx (...)。当然也会影响到增删改查。
+如何使用Hibernate进行Java到数据库的映射。映射完后程序员只需针对Java的对象进行操作就可以实现增删改查。因此如何用Hibernate建模是一个值得深入学习的内容，它主要影响的就是create
+table xxx (...)。当然也会影响到增删改查。
 
 <!-- more -->
 
@@ -207,7 +208,8 @@ public static class Address {
 ```
 
 当我们插入Java对象到数据库时，hibernate生成下面的sql语句。
-可以看见 `AddressType.MOBILE` 映射到 `1`。@Enumerated(EnumType.ORDINAL)指定枚举到数据库的映射规则是按顺序。MOBILE在AddressType中的顺序是1，所以就得到了1。
+可以看见 `AddressType.MOBILE` 映射到 `1`。@Enumerated(EnumType.ORDINAL)
+指定枚举到数据库的映射规则是按顺序。MOBILE在AddressType中的顺序是1，所以就得到了1。
 
 ```java
 Address Address=new Address();
@@ -381,7 +383,8 @@ public class User {
 }
 ```
 
-用户拥有用户类型，如果我们希望用户类型这个属性在数据库存储的是 `UserType`的name,例如 `个人`，`企业`这样的字符串， 那我们就需要自定义映射规则。
+用户拥有用户类型，如果我们希望用户类型这个属性在数据库存储的是 `UserType`的name,例如 `个人`，`企业`这样的字符串，
+那我们就需要自定义映射规则。
 
 ***@Convert***
 
@@ -481,7 +484,8 @@ create table Book
 )
 ```
 
-Publisher嵌套类是Book的一部分。生成sql语句时，可以看见Book表中也有 `publisher_country` `publisher_name`，而不是再生成一个Publisher表。
+Publisher嵌套类是Book的一部分。生成sql语句时，可以看见Book表中也有 `publisher_country` `publisher_name`
+，而不是再生成一个Publisher表。
 
 ## 1.4 实体类型
 
@@ -496,8 +500,10 @@ Hibernate里面实体类有下面几个要求
 
 ### 1.4.1 映射实体类
 
-定义一个实体类第一件事就是添加 `@Entity(name="选填，默认和类名相同")`。默认情况实体类的名字和你数据库的表名相同,如果你想指定表名可以使用 `@Table(name="xxx")`。
-确定好映射的表名后，你需要确定[主键](#_1-5-主键))并且在主键字段上用 `@Id`标识，如果是多个主键请参考[组合组件](#_1-5-2-组合主键)。
+定义一个实体类第一件事就是添加 `@Entity(name="选填，默认和类名相同")`
+。默认情况实体类的名字和你数据库的表名相同,如果你想指定表名可以使用 `@Table(name="xxx")`。
+确定好映射的表名后，你需要确定[主键](#_1-5-主键))并且在主键字段上用 `@Id`
+标识，如果是多个主键请参考[组合组件](#_1-5-2-组合主键)。
 最后将类中的属性映射到表中的字段，根据属性的类型选择合适的[值类型](#_1-1-1-值类型-value-type)
 
 ```java
@@ -590,6 +596,8 @@ public class Dependent {
 ```
 
 ## 1.6 关联
+
+[GitHub链接](https://github.com/qifan777/JPA-Hibernate-SpringDataJPA)
 
 基本概念：
 
@@ -710,7 +718,8 @@ private User user;
 
 *Bidirectional `@OneToMany`例子*
 
-Bidirectional `@OneToMany` 顾名思义它需要同时存在 `owning side`（子实体@ManyToOne）和 `inverse（mappedBy） side`（父实体OneToMany）这样才能达成双向关系。
+Bidirectional `@OneToMany` 顾名思义它需要同时存在 `owning side`（子实体@ManyToOne）和 `inverse（mappedBy） side`
+（父实体OneToMany）这样才能达成双向关系。
 
 ::: tip
 
@@ -748,7 +757,7 @@ public class User extends BaseEntity {
 
 
 ```
- 
+
 ```java
   @Test
   public void oneToMany() {
@@ -762,258 +771,232 @@ public class User extends BaseEntity {
     // 保存user到数据库时会级联创建列表内的address。
     entityManager.persist(user);
   }
+
+  @Test
+  public void oneToManyRemove() {
+    User user = entityManager.find(User.class, "1");
+    List<Address> addresses = user.getAddresses();
+    log.info("用户地址数量：{}", addresses);
+    // 减少列表
+    addresses.remove(0);
+    // 保存到数据库时，列表内减少的address会被自动删除。
+    entityManager.persist(user);
+    user = entityManager.find(User.class, "1");
+    addresses = user.getAddresses();
+    log.info("用户地址数量：{}", addresses);
+  }
 ```
 
 ### @OneToOne
 
-在使用 `@OneToOne`同样有 bidirectional 和 unidirectional 两种情况。依然是不推荐使用 unidirectional。
+在使用 `@OneToOne`同样有 bidirectional 和 unidirectional 两种情况。
 
 *Unidirectional `@OneToOne`*
 
-下面的Address关联了AddressDetails，在AddressDetails并没有 `@OneToOne`。在Address里面 `@OneToOne`映射到了外键details_id，这种就属于单向关系。
+下面的User关联了UserPhonePassword，在User并没有 `@OneToOne`。在UserPhonePassword里面 `@OneToOne`映射到了外键id，这种就属于单向关系。
 
-在一对一的关联中，外键放在哪一边比较合适是新手比较少思考的问题。在这个例子里面我的推荐是放在AddressDetails，因为AddressDetails无法脱离Address而存在，所以它适合作为子实体，Address做为父实体。
+在一对一的关联中，外键放在哪一边比较合适是新手比较少思考的问题。在这个例子里面我的推荐是放在UserPhonePassword，因为UserPhonePassword无法脱离User而存在，所以它适合作为子实体，User做为父实体。
 
 ```java
-@Entity(name = "Address")
-public static class Address {
+// 忽略其他注解...
+@Table(name = "USER_PHONE_PASSWORD")
+@Entity
+public class UserPhonePassword extends BaseEntity {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	@Column(name = "`number`")
-	private String number;
-
-	@OneToOne
-	@JoinColumn(name = "details_id")
-	private AddressDetails details;
-
-	//Getters and setters are omitted for brevity
-
+  @OneToOne
+  // 将user.id映射到this.id
+  @MapsId
+  // id既是主键又是外键
+  @JoinColumn(name = "id")
+  @ToString.Exclude
+  private User user;
+  // 逻辑主键，会建立唯一索引
+  @NaturalId
+  private String phoneNumber;
+  private String password;
 }
 
-@Entity(name = "AddressDetails")
-public static class AddressDetails {
+```
 
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	private String provider;
-
-	private String technology;
-
-	//Getters and setters are omitted for brevity
-
-}
+```java
+  @Test
+  public void oneToOneUnidirectional() {
+    User user = new User().setNickname("起凡");
+    user.setGender(GenderType.FEMALE);
+    entityManager.persist(user);
+    UserPhonePassword userPhonePassword = new UserPhonePassword();
+    // 单向关联
+    userPhonePassword.setUser(user);
+    userPhonePassword.setPhoneNumber("13676417778");
+    userPhonePassword.setPassword("123456");
+    entityManager.persist(userPhonePassword);
+  }
 ```
 
 *Bidirectional @OneToOne*
 
-可以看见现在外键Address_id是在AddressDetails，同时Address里面也多了 `@OneToOne`关联子实体，形成了双向关联。
+如果你需要在`User`中显示`UserPhonePassword`那这个时候就需要双向的`@OneToOne`。
+
+在User中新增`@OneToOne`如下。
 
 ```java
-@Entity(name = "Address")
-public static class Address {
+// 忽略其他注解...
+@Entity
+@Table(name = "USER")
+public class User extends BaseEntity {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	@Column(name = "`number`")
-	private String number;
-
-	@OneToOne(
-		mappedBy = "Address",
-		cascade = CascadeType.ALL,
-		orphanRemoval = true
-	)
-	private AddressDetails details;
-
-	//Getters and setters are omitted for brevity
-
-	public void addDetails(AddressDetails details) {
-		details.setAddress(this);
-		this.details = details;
-	}
-
-	public void removeDetails() {
-		if (details != null) {
-			details.setAddress(null);
-			this.details = null;
-		}
-	}
-}
-
-@Entity(name = "AddressDetails")
-public static class AddressDetails {
-
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	private String provider;
-
-	private String technology;
-
-	@OneToOne
-	// 可以不写@JoinColumn
-	@JoinColumn(name = "Address_id")
-	private Address Address;
-
-	//Getters and setters are omitted for brevity
+  // 忽略其他属性...
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+  @ToString.Exclude
+  private UserPhonePassword phonePassword;
 
 }
 ```
 
 ```java
-Address Address = new Address("123-456-7890");
-AddressDetails details = new AddressDetails("T-Mobile", "GSM");
+  @Test
+  public void oneToOneBidirectional() {
+    User user = new User().setNickname("起凡2");
+    user.setGender(GenderType.FEMALE);
 
-Address.addDetails(details);
-entityManager.persist(Address);
-```
+    UserPhonePassword userPhonePassword = new UserPhonePassword();
+    userPhonePassword.setPhoneNumber("13676417718");
+    userPhonePassword.setPassword("123456");
 
-```sql
-INSERT INTO Address ( number, id )
-VALUES ( '123-456-7890', 1 )
+    // 双向联系，彼此依赖
+    userPhonePassword.setUser(user);
+    user.setPhonePassword(userPhonePassword);
 
-INSERT INTO AddressDetails ( Address_id, provider, technology, id )
-VALUES ( 1, 'T-Mobile', 'GSM', 2 )
+    // 由于父实体User中配置了CascadeType.ALL，在创建User时会级联创建PhonePassword。反之则不行
+    entityManager.persist(user);
+  }
 ```
 
 ### @ManyToMany
 
-@ManyToMany不够灵活性能也比较差。 建议使用@OneToMany关联中间表。UserAddress是User和Address的中间表。
+首先不推荐使用@ManyToMany，使用 **@OneToMany+中间表** 实现多对多关联是比较灵活且高效的方式。
+如果要使用@ManyToMany推荐使用双向关联。
 
-这样你可以随时向中间表添加字段，使用@ManyToMany就没有办法了。
+@JoinTable和@JoinColumn是同一种意思，只有关系的拥有方可以使用，声明是哪一方发起的关联。虽然多对多关联中并没有关系的主动方这一说，但是在JPA里面还是需要从逻辑上定义一个关系的主动方和反方。
+
+::: warning
+@ManyToMany中关系的拥有方是父亲实体，与之前的其他关联不一样。这也是我为什么不推荐使用@ManyToMany的原因之一，只有关系的父实体可以操作关系。使用@OneToMany+中间表可以实现两边都是父亲实体，这样双方都能增加减少关联。
+:::
 
 ```java
-@Entity(name = "User")
-public static class User implements Serializable {
-
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	@NaturalId
-	private String registrationNumber;
-
-	@OneToMany(
-		mappedBy = "User",
-		cascade = CascadeType.ALL,
-		orphanRemoval = true
-	)
-	private List<UserAddress> addresses = new ArrayList<>();
-
-	//Getters and setters are omitted for brevity
-
-	public void addAddress(Address address) {
-		UserAddress UserAddress = new UserAddress(this, address);
-		addresses.add(UserAddress);
-		address.getOwners().add(UserAddress);
-	}
-
-	public void removeAddress(Address address) {
-		UserAddress UserAddress = new UserAddress(this, address);
-		address.getOwners().remove(UserAddress);
-		addresses.remove(UserAddress);
-		UserAddress.setUser(null);
-		UserAddress.setAddress(null);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		User User = (User) o;
-		return Objects.equals(registrationNumber, User.registrationNumber);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(registrationNumber);
-	}
+// 忽略其他注解...
+@Entity
+@Table(name = "USER")
+public class User extends BaseEntity {
+  // 忽略其他字段...
+  @JoinTable(name = "USER_ROLE", joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "role_id"))
+  @ManyToMany
+  @ToString.Exclude
+  private Set<Role> roles;
 }
+// 忽略其他注解...
+@Entity
+@Table(name = "ROLE")
+public class Role extends BaseEntity {
 
-@Entity(name = "UserAddress")
-public static class UserAddress implements Serializable {
-
-	@Id
-	@ManyToOne
-	private User User;
-
-	@Id
-	@ManyToOne
-	private Address address;
-
-	//Getters and setters are omitted for brevity
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		UserAddress that = (UserAddress) o;
-		return Objects.equals(User, that.User) &&
-				Objects.equals(address, that.address);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(User, address);
-	}
-}
-
-@Entity(name = "Address")
-public static class Address implements Serializable {
-
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	private String street;
-
-	@Column(name = "`number`")
-	private String number;
-
-	private String postalCode;
-
-	@OneToMany(
-		mappedBy = "address",
-		cascade = CascadeType.ALL,
-		orphanRemoval = true
-	)
-	private List<UserAddress> owners = new ArrayList<>();
-
-	//Getters and setters are omitted for brevity
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		Address address = (Address) o;
-		return Objects.equals(street, address.street) &&
-				Objects.equals(number, address.number) &&
-				Objects.equals(postalCode, address.postalCode);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(street, number, postalCode);
-	}
+  @Column(nullable = false, length = 20, unique = true)
+  @Size(min = 1, max = 20, message = "角色名称不能为空")
+  private String name;
+  // 关系的反方需要填写mappedBy
+  @ManyToMany(mappedBy = "roles")
+  @ToString.Exclude
+  private Set<User> users;
 }
 ```
 
+
+
+```java
+  /**
+   * 注意：@ManyToMany比较特殊，关系的拥有方是父实体。 为用户关联所有角色
+   */
+  @Test
+  public void manyToManySave() {
+    List<Role> roleList = entityManager.createQuery("select r from Role  r", Role.class)
+        .getResultList();
+    User user = entityManager.find(User.class, "1");
+    user.getRoles().addAll(roleList);
+    entityManager.persist(user);
+  }
+
+  /**
+   * 从用户关联的角色删除一个角色
+   */
+  @Test
+  public void manyToManyRemove() {
+    User user = entityManager.find(User.class, "1");
+    List<Role> roles = user.getRoles().stream().toList();
+    user.getRoles().remove(roles.get(0));
+    entityManager.persist(user);
+  }
+```
+
+### @OneToMany+中间表
+
+```java
+// 忽略其他注解...
+@Entity
+@Table(name = "ROLE")
+public class Role extends BaseEntity {
+
+  // 忽略其他字段...
+  @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+  @ToString.Exclude
+  private Set<RoleMenuRel> menus;
+
+}
+// 忽略其他注解...
+@Entity
+@Table(name = "ROLE_MENU")
+public class RoleMenu extends BaseEntity {
+  @ManyToOne
+  private Menu menu;
+  @ManyToOne
+  private Role role;
+}
+// 忽略其他注解...
+@Entity
+@Table(name = "MENU")
+@DynamicInsert
+public class Menu extends BaseEntity {
+  @Column(length = 20, nullable = false, unique = true)
+  private String name;
+  @Column
+  @ColumnDefault("0")
+  private String parentId;
+  @Column
+  @ColumnDefault("0")
+  private Integer orderNum;
+  // 路由路径
+  private String path;
+  @Convert(converter = MenuTypeConverter.class)
+  @Column(nullable = false)
+  private MenuType menuType;
+  @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Exclude
+  private List<RoleMenu> roles;
+}
+```
+```java
+  @Test
+  public void manyToManyByMiddle() {
+    List<Menu> menuList = entityManager.createQuery("select m from Menu m", Menu.class)
+        .getResultList();
+    Role role = entityManager.find(Role.class, "1");
+    for (Menu menu : menuList) {
+      entityManager.persist(new RoleMenu().setMenu(menu).setRole(role));
+    }
+  }
+
+  @Test
+  public void manyToManyByMiddleQuery() {
+    Role role = entityManager.find(Role.class, "1");
+    log.info("角色：{}拥有的菜单数量：{}", role.getName(), role.getMenus().size());
+  }
+```
