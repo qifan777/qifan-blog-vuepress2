@@ -19,7 +19,7 @@ ESLint可以做两件事
 
 - ESLint 插件：定义一系列的校验规则，常以 eslint-plugin-* 命名，在 ESLint 配置文件中通过 plugins 选项引入。
   需要注意的是，插件仅定义规则，并不启用规则。规则是由 ESLint 配置的 rules 选项启用的。
-- 可共享配置（ Shareable Configs ）：每个 ESLint 配置文件都可以复用其他配置，被复用的这些配置被称为可共享配置。可共享配置一共有两种形式：
+- 可共享配置（ Shareable Configs ）：每个 ESLint 配置文件都可以复用其他配置，这些配置称为可共享配置。可共享配置一共有两种形式：
     - ESLint Config：纯粹的配置，包含各个 ESLint 配置选项，常用 eslint-config-* 命名发布
     - ESLint 插件带配置（ Plugins with configs ） ：在原先的 ESLint 插件上导出 configs 对象，configs 等价于
       ESLint Config。拓展此类插件的可共享配置时需要在前面增加 plugin: 前缀，比如 plugin:
@@ -146,6 +146,6 @@ coverage
 }
 ```
 
-###             
+###              
 
 

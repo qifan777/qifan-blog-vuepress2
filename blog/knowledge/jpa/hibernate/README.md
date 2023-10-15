@@ -495,7 +495,7 @@ Hibernate里面实体类有下面几个要求
 - 实体类必须有一个public或者protected的无参构造器
 - 接口和枚举不能成为实体类
 - 实体类不能是final，里面的映射字段也不能是final。
-- 实体类可以是抽象类（abstract），实体类可以继承抽象类实体。
+- 实体类可以是 抽象类（abstract），实体类可以继承抽象类实体。
 - 实体类的每个映射字段都需要有getter/setter
 
 ### 1.4.1 映射实体类
@@ -910,8 +910,6 @@ public class Role extends BaseEntity {
 }
 ```
 
-
-
 ```java
   /**
    * 注意：@ManyToMany比较特殊，关系的拥有方是父实体。 为用户关联所有角色
@@ -983,6 +981,7 @@ public class Menu extends BaseEntity {
   private List<RoleMenu> roles;
 }
 ```
+
 ```java
   @Test
   public void manyToManyByMiddle() {

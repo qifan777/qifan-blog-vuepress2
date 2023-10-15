@@ -9,7 +9,7 @@ date: 2023-09-10
 timeline: true
 ---
 
-# 通用模块
+# 后端基础
 
 ## BaseEntity
 
@@ -99,7 +99,7 @@ public abstract class BaseEntity extends AbstractAggregateRoot<BaseEntity> {
 
 ## EntityOperations
 
-针对常见的增加和修改操作进行了函数式封装。下面是一个正常的更新用户信息流程。
+针对常见地增加和修改操作进行了函数式封装。下面是一个正常地更新用户信息流程。
 
 ```java
 public void updateUser(UserUpdateRequest request, String id) {
