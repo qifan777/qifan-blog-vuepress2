@@ -10,7 +10,7 @@ export default navbar([
             {text: '飞鸽邮筒', link: 'post-letter/'},
             {text: '多模块微服务实战', link: 'microservice-practice/book'},
             {text: 'ChatGPT助手', link: 'chatgpt-assistant/'},
-            {text: "起凡小商店", link: "qifan-shop"}],
+            {text: "起凡商城", link: "qifan-mall"}],
     },
     {
         text: '工具分享',
