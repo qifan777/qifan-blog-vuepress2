@@ -162,25 +162,29 @@ export const useFormHelper = <T extends BaseEntity>(formValue: T) => {
 DialogHelper将Dialog通用的变量抽取出来，每次新建一个Dialog时只需要调用useDialogHelper就可以快速写出一个对话框。
 
 ```ts
+import {nextTick, ref} from 'vue'
+import type {EditMode} from '@/typings'
+
 export const useDialogHelper = () => {
-    const dialogData = reactive<{ width: number; title: string; visible: boolean; mode: EditMode }>({
-        width: 1200,
+    const dialogData = ref<{ width: number; title: string; visible: boolean; mode: EditMode }>({
+        width: 600,
         title: '',
         visible: false,
         mode: 'CREATE'
     })
     const closeDialog = () => {
-        dialogData.visible = false
+        dialogData.value.visible = false
     }
     const openDialog = async (mode?: EditMode) => {
         if (mode !== undefined) {
-            dialogData.mode = mode
+            dialogData.value.mode = mode
         }
         await nextTick()
-        dialogData.visible = true
+        dialogData.value.visible = true
     }
     return {dialogData, closeDialog, openDialog}
 }
+
 ```
 
 ### queryHelper
@@ -188,14 +192,17 @@ export const useDialogHelper = () => {
 queryHelper抽取查询表单的通用变量和方法。辅助Query编写组件。
 
 ```ts
-export const QueryHelper = <T>(initQuery: T) => {
-    const queryData = ref({query: initQuery, matchMode: 'VAGUE'}) as Ref<{
+import {type Ref, ref} from 'vue'
+import type {LikeMode} from '@/api/__generated/model/enums'
+
+export const useQueryHelper = <T>(initQuery: T) => {
+    const queryData = ref({query: initQuery, likeMode: 'ANYWHERE'}) as Ref<{
         query: T
-        matchMode: MatchMode
+        likeMode: LikeMode
     }>
     const restQuery = () => {
         queryData.value.query = {...initQuery}
-        queryData.value.matchMode = 'VAGUE'
+        queryData.value.likeMode = 'ANYWHERE'
     }
     return {queryData, restQuery}
 }
