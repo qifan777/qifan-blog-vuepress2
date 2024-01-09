@@ -2,4 +2,4 @@
 User-agent:*
 Disallow:
 
-Sitemap: https://mister-hope.github.io/qifan-blog-vuepress2/sitemap.xml
+Sitemap: https://mister-hope.github.io/blog/sitemap.xml
