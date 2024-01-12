@@ -28,9 +28,10 @@ export default sidebar({
         {text: "商品模块", prefix: "product/", children: "structure"},
     ],
     "/project/qifan-mall/": [
-        {text: "项目介绍", link: "/project/qifan-mall/"},
+        "",
         {text: "快速上手", prefix: "start/", children: "structure"},
         {text: "登录注册", prefix: "login/", children: 'structure'},
+        "dict",
         {text: "权限", prefix: "permission/", children: "structure"},
         {text: "参考", prefix: "reference/", children: "structure"},
     ],
