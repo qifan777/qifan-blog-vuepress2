@@ -29,6 +29,10 @@ input UserRegisterInput{
 `UserController`中新增register api
 
 ```java
+  @GetMapping("user-info")
+  public @FetchBy(value = "COMPLEX_FETCHER", ownerType = UserRepository.class) User getUserInfo() {
+    return userService.getUserInfo();
+  }
   @PostMapping("register")
   public SaTokenInfo register(@RequestBody @Validated UserRegisterInput registerInput) {
     return userService.register(registerInput);

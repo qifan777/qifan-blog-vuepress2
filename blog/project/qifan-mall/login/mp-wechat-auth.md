@@ -83,6 +83,15 @@ wx:
       type: redistemplate
 ```
 
+## 自动续签
+
+在application.yml中新增sa-token配置
+
+```yaml
+  # 自动续签
+  auto-renew: true
+```
+
 ## 小程序端
 
 ### 小程序登录
@@ -90,22 +99,37 @@ wx:
 在`src/pages/index/index.vue`调用登录接口。
 
 ```ts
+<script setup lang="ts">
+import Taro from "@tarojs/taro";
+import { api } from "@/utils/api-instance";
+import { useHomeStore } from "@/stores/home-store";
+import RegisterPopup from "@/components/register-popup/register-popup.vue";
+
 const homeStore = useHomeStore();
 Taro.useLoad(() => {
-    Taro.login({
-        success: function (loginRes) {
-            // 调用微信登录接口
-            api.authController
-                .authByWecChat({
-                    body: {
-                        loginCode: loginRes.code,
-                    },
-                })
-                .then(() => {
-                    // 调用微信登录接口
-                    homeStore.getUserInfo();
-                });
-        },
-    });
+  Taro.login({
+    success: function (loginRes) {
+      // 调用微信登录接口
+      api.authController
+        .authByWecChat({
+          body: {
+            loginCode: loginRes.code,
+          },
+        })
+        .then((res) => {
+          // 存储token，下次发起请求时携带
+          Taro.setStorageSync("token", res.tokenValue);
+          homeStore.getUserInfo();
+        });
+    },
+  });
 });
+</script>
+
+<template>
+  <register-popup></register-popup>
+</template>
+
+<style scoped lang="scss"></style>
+
 ```

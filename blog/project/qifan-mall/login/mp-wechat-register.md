@@ -19,7 +19,7 @@ user_id作为外键关联user表。每个微信用户在每个小程序中的ope
 
 ```sql
 -- auto-generated definition
-create table user_wechat
+create table user_we_chat
 (
     id           varchar(36) not null
         primary key,
@@ -164,7 +164,7 @@ export const sendSMS = (phone: string) => {
 
 ```ts
 import { defineStore } from "pinia";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import { api } from "@/utils/api-instance";
 import { UserDto } from "@/apis/__generated/model/dto";
 
@@ -178,16 +178,12 @@ export const useHomeStore = defineStore("home", () => {
     phone: "",
   });
   const registerShow = ref(false);
-  onMounted(() => {
-    getUserInfo();
-  });
   const getUserInfo = async () => {
     userInfo.value = await api.userController.getUserInfo();
     return userInfo.value;
   };
   return { userInfo, registerShow, getUserInfo };
 });
-
 ```
 
 ### 注册界面

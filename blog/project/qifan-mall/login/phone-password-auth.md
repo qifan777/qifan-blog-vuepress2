@@ -14,7 +14,7 @@ timeline: true
 
 ### 定义接口和模型
 
-考虑到需要多种认证方式，定义认证接口，同一返回`SaTokenInfo`。
+考虑到需要多种认证方式，定义认证接口，同一返回[`SaTokenInfo`](https://sa-token.cc/)。
 
 #### 认证模型
 
