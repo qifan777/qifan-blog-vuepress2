@@ -228,13 +228,34 @@ onMounted(async () => {
 
 ### 编写模板文件
 
+#### 字典上下文
+
+```java
+package io.qifan.mall.server.dict.model;
+
+import io.qifan.mall.server.dict.entity.Dict;
+import java.util.List;
+import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class DictGenContext {
+
+  private List<String> dictTypes;
+  private Map<String, List<Dict>> dictMap;
+}
+
+```
+
 #### 后端枚举生成模板
 
 在resource/templates下新建`dict-java.ftl`
 
 ```
 <#-- @ftlvariable name="" type="io.qifan.mall.server.dict.model.DictGenContext" -->
-package io.qifan.mall.server.dict.config;
+package io.qifan.mall.server.dict.model;
 import lombok.Getter;
 public class DictConstants {
 <#list getDictTypes() as type>
@@ -250,6 +271,7 @@ public class DictConstants {
   }
 </#list>
 }
+
 ```
 
 #### 前端字典编号模板
@@ -267,7 +289,7 @@ export const DictConstants = {
 
 在DictService中新增前后端代码生成方法。
 
-```
+```java
   public DictGenContext getDictGenContext() {
     Converter<String, String> converter = CaseFormat.UPPER_UNDERSCORE.converterTo(
         CaseFormat.UPPER_CAMEL);
@@ -292,7 +314,7 @@ export const DictConstants = {
     Template template = configuration.getTemplate("dict-java.ftl");
     // 创建输出文件
     File outputFile = new File(
-        "mall-server/src/main/java/io/qifan/mall/server/dict/config/DictConstants.java");
+        "mall-server/src/main/java/io/qifan/mall/server/dict/model/DictConstants.java");
     outputFile.createNewFile();
     // 创建Writer对象
     Writer writer = new FileWriter(outputFile, false);
