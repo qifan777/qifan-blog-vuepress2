@@ -14,22 +14,23 @@ public enum Gender{
 在后端定义完枚举，前端也需要定义同样的下拉框用于创建或者修改用户的性别。
 
 ```vue
-<script lang="ts" setup>
-import { ref } from 'vue'
 
-const genderList = ref([
-  { label: '男', value: 'MALE' },
-  { label: '女', value: 'FEMALE' }
-])
+<script lang="ts" setup>
+  import {ref} from 'vue'
+
+  const genderList = ref([
+    {label: '男', value: 'MALE'},
+    {label: '女', value: 'FEMALE'}
+  ])
 </script>
 <template>
   <div>
     <el-select>
       <el-option
-        v-for="gender in genderList"
-        :key="gender.value"
-        :label="gender.label"
-        :value="gender.value"
+          v-for="gender in genderList"
+          :key="gender.value"
+          :label="gender.label"
+          :value="gender.value"
       >
       </el-option>
     </el-select>
@@ -43,8 +44,8 @@ const genderList = ref([
 
 ```ts
 const genderTranslate = (value: string) => {
-  const gender = genderList.value.find((item) => item.value == value)
-  return gender ? gender.label : ''
+    const gender = genderList.value.find((item) => item.value == value)
+    return gender ? gender.label : ''
 }
 // 将MALE翻译成中文
 genderTranslate('MALE')
@@ -111,7 +112,7 @@ public interface Dict extends BaseEntity {
 
 ## 生成代码
 
-运行`mall-server/src/test/java/io/qifan/mall/server/MallCodeGenerator.java`。  
+运行`mall-server/src/test/java/io/qifan/mall/server/MallCodeGenerator.java`。
 
 ## 字典选择和翻译组件
 
@@ -119,53 +120,54 @@ public interface Dict extends BaseEntity {
 
 ```ts
 const dictMap: Record<number, Promise<Page<DictDto['DictRepository/COMPLEX_FETCHER']>>> = {}
-export const queryDict = (dictSpec: DictSpec) => {  
-  if (!dictSpec.dictId) return
-  // 检查缓存是否存在promise
-  let res = dictMap[dictSpec.dictId]
-  // 存在直接把promise返回
-  if (res) return res
-  // 发起请求得到promise
-  res = api.dictController.query({
-    body: {
-      pageNum: 1,
-      pageSize: 1000,
-      likeMode: 'ANYWHERE',
-      query: dictSpec,
-      sorts: [{ property: 'dictId', direction: 'ASC' }]
-    }
-  })
-  // 缓存结果，后续调用不需要再发请求
-  dictMap[dictSpec.dictId] = res
-  return res
+export const queryDict = (dictSpec: DictSpec) => {
+    if (!dictSpec.dictId) return
+    // 检查缓存是否存在promise
+    let res = dictMap[dictSpec.dictId]
+    // 存在直接把promise返回
+    if (res) return res
+    // 发起请求得到promise
+    res = api.dictController.query({
+        body: {
+            pageNum: 1,
+            pageSize: 1000,
+            likeMode: 'ANYWHERE',
+            query: dictSpec,
+            sorts: [{property: 'dictId', direction: 'ASC'}]
+        }
+    })
+    // 缓存结果，后续调用不需要再发请求
+    dictMap[dictSpec.dictId] = res
+    return res
 }
 ```
 
 ### 字典翻译
 
 ```vue
+
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import type { DictDto } from '@/apis/__generated/model/dto'
-import { queryDict } from '@/components/dict/dict'
-// 接受字典编号和值英文名称
-const props = withDefaults(defineProps<{ dictId: number; value?: string }>(), { value: '' })
-const options = ref<DictDto['DictRepository/COMPLEX_FETCHER'][]>([])
-onMounted(async () => {
+  import {computed, onMounted, ref} from 'vue'
+  import type {DictDto} from '@/apis/__generated/model/dto'
+  import {queryDict} from '@/components/dict/dict'
+  // 接受字典编号和值英文名称
+  const props = withDefaults(defineProps<{ dictId: number; value?: string }>(), {value: ''})
+  const options = ref<DictDto['DictRepository/COMPLEX_FETCHER'][]>([])
+  onMounted(async () => {
     // 根据字典编号查询出所有字典项
-  const res = queryDict({ dictId: props.dictId })
-  if (res) {
-    options.value = (await res).content
-  }
-})
-const keyName = computed(() => {
-    // 用字典英文名称去匹配
-  const option = options.value.find((option) => {
-    return option.keyEnName === props.value
+    const res = queryDict({dictId: props.dictId})
+    if (res) {
+      options.value = (await res).content
+    }
   })
-  // 得到中文名称
-  return option ? option.keyName : ''
-})
+  const keyName = computed(() => {
+    // 用字典英文名称去匹配
+    const option = options.value.find((option) => {
+      return option.keyEnName === props.value
+    })
+    // 得到中文名称
+    return option ? option.keyName : ''
+  })
 </script>
 
 <template>
@@ -178,49 +180,50 @@ const keyName = computed(() => {
 ### 字典选择
 
 ```vue
-<script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import type { DictDto } from '@/apis/__generated/model/dto'
-import { queryDict } from '@/components/dict/dict'
 
-const props = withDefaults(defineProps<{ dictId: number; modelValue?: string }>(), {
-  modelValue: ''
-})
-const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
-const options = ref<DictDto['DictRepository/COMPLEX_FETCHER'][]>([])
-onMounted(async () => {
-  const res = queryDict({ dictId: props.dictId })
-  if (res) {
-    options.value = (await res).content
-  }
-})
+<script setup lang="ts">
+  import {onMounted, ref} from 'vue'
+  import type {DictDto} from '@/apis/__generated/model/dto'
+  import {queryDict} from '@/components/dict/dict'
+
+  const props = withDefaults(defineProps<{ dictId: number; modelValue?: string }>(), {
+    modelValue: ''
+  })
+  const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
+  const options = ref<DictDto['DictRepository/COMPLEX_FETCHER'][]>([])
+  onMounted(async () => {
+    const res = queryDict({dictId: props.dictId})
+    if (res) {
+      options.value = (await res).content
+    }
+  })
 </script>
 
 <template>
   <el-select
-    v-bind="$attrs"
-    class="dict-select"
-    :model-value="modelValue"
-    clearable
-    @change="
+      v-bind="$attrs"
+      class="dict-select"
+      :model-value="modelValue"
+      clearable
+      @change="
       (v) => {
         emit('update:modelValue', v)
       }
     "
   >
     <el-option
-      v-for="option in options"
-      :key="option.id"
-      :value="option.keyEnName"
-      :label="option.keyName"
+        v-for="option in options"
+        :key="option.id"
+        :value="option.keyEnName"
+        :label="option.keyName"
     ></el-option>
   </el-select>
 </template>
 
 <style scoped lang="scss">
-.dict-select {
-  width: 160px;
-}
+  .dict-select {
+    width: 160px;
+  }
 </style>
 ```
 
@@ -297,7 +300,7 @@ export const DictConstants = {
     Map<String, List<Dict>> dictMaps = new HashMap<>();
     all.forEach(dict -> {
       String dictEnName = converter.convert(dict.dictEnName());
-      dictMaps.putIfAbsent(converter.convert(dictEnName), new ArrayList<>());
+      dictMaps.putIfAbsent(dictEnName, new ArrayList<>());
       List<Dict> dictList = dictMaps.get(dictEnName);
       dictList.add(dict);
     });
@@ -395,10 +398,11 @@ ResponseInterceptor新增响应拦截器，之前没有识别`byte[]`类型的�
 import http from 'http'
 import fs from 'fs'
 import fse from 'fs-extra'
-import { v4 as uuidv4 } from 'uuid'
+import {v4 as uuidv4} from 'uuid'
 import os from 'os'
 import path from 'path'
 import AdmZip from 'adm-zip'
+
 const sourceUrl = 'http://localhost:8877/ts.zip'
 const tmpFilePath = os.tmpdir() + '/' + uuidv4() + '.zip'
 const generatePath = 'src/apis/__generated'
@@ -407,34 +411,34 @@ console.log('Downloading ' + sourceUrl + '...')
 
 const tmpFile = fs.createWriteStream(tmpFilePath)
 http.get(sourceUrl, (response) => {
-  response.pipe(tmpFile)
-  tmpFile.on('finish', () => {
-    tmpFile.close()
-    console.log('File save success: ', tmpFilePath)
+    response.pipe(tmpFile)
+    tmpFile.on('finish', () => {
+        tmpFile.close()
+        console.log('File save success: ', tmpFilePath)
 
-    if (fs.existsSync(generatePath)) {
-      console.log('Removing existing generatePath...')
-      fse.removeSync(generatePath)
-      console.log('Existing generatePath removed.')
-    }
+        if (fs.existsSync(generatePath)) {
+            console.log('Removing existing generatePath...')
+            fse.removeSync(generatePath)
+            console.log('Existing generatePath removed.')
+        }
 
-    console.log('Unzipping the file...')
-    const zip = new AdmZip(tmpFilePath)
-    zip.extractAllTo(generatePath, true)
-    console.log('File unzipped successfully.')
-    // Remove the temporary file
-    console.log('Removing temporary file...')
-    fs.unlink(tmpFilePath, (err) => {
-      if (err) {
-        console.error('Error while removing temporary file:', err)
-      } else {
-        console.log('Temporary file removed.')
-      }
+        console.log('Unzipping the file...')
+        const zip = new AdmZip(tmpFilePath)
+        zip.extractAllTo(generatePath, true)
+        console.log('File unzipped successfully.')
+        // Remove the temporary file
+        console.log('Removing temporary file...')
+        fs.unlink(tmpFilePath, (err) => {
+            if (err) {
+                console.error('Error while removing temporary file:', err)
+            } else {
+                console.log('Temporary file removed.')
+            }
+        })
+        traverseDirectory(modelPath)
+        traverseDirectory(servicePath)
+        getDictConstants()
     })
-    traverseDirectory(modelPath)
-    traverseDirectory(servicePath)
-    getDictConstants()
-  })
 })
 
 // 替换目录路径
@@ -443,39 +447,40 @@ const servicePath = 'src/apis/__generated/services'
 
 // 递归遍历目录中的所有文件
 function traverseDirectory(directoryPath) {
-  const files = fs.readdirSync(directoryPath)
+    const files = fs.readdirSync(directoryPath)
 
-  files.forEach((file) => {
-    const filePath = path.join(directoryPath, file)
-    const stats = fs.statSync(filePath)
+    files.forEach((file) => {
+        const filePath = path.join(directoryPath, file)
+        const stats = fs.statSync(filePath)
 
-    if (stats.isDirectory()) {
-      traverseDirectory(filePath)
-    } else if (stats.isFile() && path.extname(filePath) === '.ts') {
-      replaceInFile(filePath)
-    }
-  })
+        if (stats.isDirectory()) {
+            traverseDirectory(filePath)
+        } else if (stats.isFile() && path.extname(filePath) === '.ts') {
+            replaceInFile(filePath)
+        }
+    })
 }
 
 // 替换文件中的文本
 function replaceInFile(filePath) {
-  const fileContent = fs.readFileSync(filePath, 'utf8')
-  const updatedContent = fileContent
-    .replaceAll('readonly ', '')
-    .replace(/ReadonlyArray/g, 'Array')
-    .replaceAll('ReadonlyMap', 'Map')
-    .replace(/Map<(\S+), (\S+)>/g, '{ [key: $1]: $2 }')
-    .replace(/query: (\S+)/g, 'query: T')
-  fs.writeFileSync(filePath, updatedContent, 'utf8')
+    const fileContent = fs.readFileSync(filePath, 'utf8')
+    const updatedContent = fileContent
+        .replaceAll('readonly ', '')
+        .replace(/ReadonlyArray/g, 'Array')
+        .replaceAll('ReadonlyMap', 'Map')
+        .replace(/Map<(\S+), (\S+)>/g, '{ [key: $1]: $2 }')
+        .replace(/query: (\S+)/g, 'query: T')
+    fs.writeFileSync(filePath, updatedContent, 'utf8')
 }
+
 // 同步字典编号
 const getDictConstants = () => {
-  const dict = fs.createWriteStream('src/apis/__generated/model/enums/DictConstants.ts')
-  http.get('http://localhost:8877/dict/ts', (response) => {
-    response.on('data', (chunk) => {
-      dict.write(chunk.toString())
+    const dict = fs.createWriteStream('src/apis/__generated/model/enums/DictConstants.ts')
+    http.get('http://localhost:8877/dict/ts', (response) => {
+        response.on('data', (chunk) => {
+            dict.write(chunk.toString())
+        })
     })
-  })
 }
 
 ```
