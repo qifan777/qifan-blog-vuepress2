@@ -1,3 +1,15 @@
+---
+category:
+  - 起凡商城
+tag:
+  - 字典管理
+  - 字典选择器
+  - 字典翻译
+order: 0
+date: 2024-01-14
+timeline: true
+---
+
 # 字典管理
 
 相信大家都有在代码中使用枚举类的情况。比如下面的用户性别。
@@ -145,29 +157,25 @@ export const queryDict = (dictSpec: DictSpec) => {
 ### 字典翻译
 
 ```vue
-
 <script setup lang="ts">
-  import {computed, onMounted, ref} from 'vue'
-  import type {DictDto} from '@/apis/__generated/model/dto'
-  import {queryDict} from '@/components/dict/dict'
-  // 接受字典编号和值英文名称
-  const props = withDefaults(defineProps<{ dictId: number; value?: string }>(), {value: ''})
-  const options = ref<DictDto['DictRepository/COMPLEX_FETCHER'][]>([])
-  onMounted(async () => {
-    // 根据字典编号查询出所有字典项
-    const res = queryDict({dictId: props.dictId})
-    if (res) {
-      options.value = (await res).content
-    }
+import { computed, onMounted, ref } from 'vue'
+import type { DictDto } from '@/apis/__generated/model/dto'
+import { queryDict } from '@/components/dict/dict'
+
+const props = withDefaults(defineProps<{ dictId: number; value?: string }>(), { value: '' })
+const options = ref<DictDto['DictRepository/COMPLEX_FETCHER'][]>([])
+onMounted(async () => {
+  const res = queryDict({ dictId: props.dictId })
+  if (res) {
+    options.value = (await res).content
+  }
+})
+const keyName = computed(() => {
+  const option = options.value.find((option) => {
+    return option.keyEnName === props.value
   })
-  const keyName = computed(() => {
-    // 用字典英文名称去匹配
-    const option = options.value.find((option) => {
-      return option.keyEnName === props.value
-    })
-    // 得到中文名称
-    return option ? option.keyName : ''
-  })
+  return option ? option.keyName : ''
+})
 </script>
 
 <template>
@@ -175,55 +183,55 @@ export const queryDict = (dictSpec: DictSpec) => {
 </template>
 
 <style scoped lang="scss"></style>
+
 ```
 
 ### 字典选择
 
 ```vue
-
 <script setup lang="ts">
-  import {onMounted, ref} from 'vue'
-  import type {DictDto} from '@/apis/__generated/model/dto'
-  import {queryDict} from '@/components/dict/dict'
+import { onMounted, ref } from 'vue'
+import type { DictDto } from '@/apis/__generated/model/dto'
+import { queryDict } from '@/components/dict/dict'
 
-  const props = withDefaults(defineProps<{ dictId: number; modelValue?: string }>(), {
-    modelValue: ''
-  })
-  const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
-  const options = ref<DictDto['DictRepository/COMPLEX_FETCHER'][]>([])
-  onMounted(async () => {
-    const res = queryDict({dictId: props.dictId})
-    if (res) {
-      options.value = (await res).content
-    }
-  })
+const props = withDefaults(defineProps<{ dictId: number; modelValue?: string }>(), {
+  modelValue: ''
+})
+const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
+const options = ref<DictDto['DictRepository/COMPLEX_FETCHER'][]>([])
+onMounted(async () => {
+  const res = queryDict({ dictId: props.dictId })
+  if (res) {
+    options.value = (await res).content
+  }
+})
 </script>
 
 <template>
   <el-select
-      v-bind="$attrs"
-      class="dict-select"
-      :model-value="modelValue"
-      clearable
-      @change="
+    v-bind="$attrs"
+    class="dict-select"
+    :model-value="modelValue"
+    clearable
+    @change="
       (v) => {
         emit('update:modelValue', v)
       }
     "
   >
     <el-option
-        v-for="option in options"
-        :key="option.id"
-        :value="option.keyEnName"
-        :label="option.keyName"
+      v-for="option in options"
+      :key="option.id"
+      :value="option.keyEnName"
+      :label="option.keyName"
     ></el-option>
   </el-select>
 </template>
 
 <style scoped lang="scss">
-  .dict-select {
-    width: 160px;
-  }
+.dict-select {
+  width: 160px;
+}
 </style>
 ```
 

@@ -19,10 +19,11 @@ timeline: true
 TableHelper抽取了表格组件中的通用变量pageData(分页结果), queryRequest(分页请求), tableSelectedRows(已选数据), loading([v-loading](https://element-plus.gitee.io/zh-CN/component/loading.html#%E5%8C%BA%E5%9F%9F%E5%8A%A0%E8%BD%BD)), table(ElTable实例)。除了通用的变量外还有通用的方法。
 
 ```ts
-import { ElTable } from 'element-plus'
-import { type Ref, ref } from 'vue'
-import type { Page, QueryRequest } from '@/api/__generated/model/static'
+import {ElTable} from 'element-plus'
+import {type Ref, ref} from 'vue'
+import type {Page, QueryRequest} from '@/api/__generated/model/static'
 import _ from 'lodash'
+
 export type PageResult<T> = Pick<
     Page<T>,
     'content' | 'number' | 'size' | 'totalElements' | 'totalPages'
@@ -49,7 +50,7 @@ export const useTableHelper = <T extends Object, E>(
         pageNum: 1,
         pageSize: 10,
         likeMode: 'ANYWHERE',
-        sorts: [{ property: 'createdTime', direction: 'DESC' }]
+        sorts: [{property: 'createdTime', direction: 'DESC'}]
     }) as Ref<QueryRequest<T>>
     const loading = ref(false)
     const tableSelectedRows = ref([]) as Ref<E[]>
@@ -62,9 +63,9 @@ export const useTableHelper = <T extends Object, E>(
             ...queryRequest.value,
             ..._.omitBy(request, _.isNull)
         }
-        queryRequest.value.query = { ..._.omitBy(queryRequest.value.query, _.isEmpty) } as T
+        queryRequest.value.query = {..._.omitBy(queryRequest.value.query, _.isEmpty)} as T
         loading.value = true
-        queryApi.apply(object, [{ body: queryRequest.value }]).then(
+        queryApi.apply(object, [{body: queryRequest.value}]).then(
             (res) => {
                 if (postProcessor !== undefined) {
                     postProcessor(res)
@@ -79,7 +80,7 @@ export const useTableHelper = <T extends Object, E>(
     }
     // 重新请求分页数据，pageNum=1, pageSize=10
     const reloadTableData = (
-        queryRequest: Partial<QueryRequest<T>> = { pageNum: 1, pageSize: 10 }
+        queryRequest: Partial<QueryRequest<T>> = {pageNum: 1, pageSize: 10}
     ) => {
         loadTableData(queryRequest)
     }
@@ -122,8 +123,6 @@ export const useTableHelper = <T extends Object, E>(
     }
 }
 ```
-
-
 
 ### DialogHelper
 
@@ -171,11 +170,10 @@ export const QueryHelper = <T>(initQuery: T) => {
 
 ## 左右联动菜单
 
-<center>
-<img src="./bidirectional.gif">
+:::center
+![图1 左右联动菜单效果图](./bidirectional.gif)
+:::
 
-图1 左右联动菜单效果图
-</center>
 搭建基本的结构，左侧（left-scroll）用于存放类别（category-section），右侧（right-scroll）用于存放商品（product-section）。类别区域中有多类别（category-item），每个类别呈左右结构（icon）和（name）。
 
 ### 样式
@@ -505,11 +503,9 @@ export const QueryHelper = <T>(initQuery: T) => {
 
 ## 商品封面
 
-<center>
-<img src="./img_7.png">
-
-图2 商品封面布局
-</center>
+:::center
+![图2 商品封面布局](./img_7.png)
+:::
 
 整个商品封面的布局如图2所示。可以用切蛋糕的思路去理解。①把商品切成左右两部分，②③把右侧切成上中下三部分。④把右下切成左右两部分
 
@@ -649,27 +645,26 @@ export const QueryHelper = <T>(initQuery: T) => {
 
 ```json
 {
-   "totalElements": 3,
-   "totalPages": 1,
-   "size": 10,
-   "number": 0,
-   "content": [
-      {
-         "id": "d5352808-e463-4af9-9252-6db6b7df2ca0",
-         "name": "测试2"
-      },
-      {
-         "id": "17509f5c-9a6b-429c-b467-cadbd8873d2d",
-         "name": "测试3"
-      },
-      {
-         "id": "1",
-         "name": "管理员"
-      }
-   ]
+  "totalElements": 3,
+  "totalPages": 1,
+  "size": 10,
+  "number": 0,
+  "content": [
+    {
+      "id": "d5352808-e463-4af9-9252-6db6b7df2ca0",
+      "name": "测试2"
+    },
+    {
+      "id": "17509f5c-9a6b-429c-b467-cadbd8873d2d",
+      "name": "测试3"
+    },
+    {
+      "id": "1",
+      "name": "管理员"
+    }
+  ]
 }
 ```
-
 
 - `roleQueryOptions`：提供待选择的角色列表
 - `roleIds`：已选的角色会双向绑定到该数组
@@ -677,83 +672,87 @@ export const QueryHelper = <T>(initQuery: T) => {
 - `value-prop`：根据上面的数据结构知道id可以作为el-option组件的value
 
 ```vue
+
 <script lang="ts" setup>
-const roleIds=ref<string[]>([])
-// 调用后端获取待选择的列表
-const roleQueryOptions = async (keyword: string) => {
-   return (await api.roleController.query({ body: { query: { name: keyword } } })).content
-}
+  const roleIds = ref<string[]>([])
+  // 调用后端获取待选择的列表
+  const roleQueryOptions = async (keyword: string) => {
+    return (await api.roleController.query({body: {query: {name: keyword}}})).content
+  }
 </script>
 <template>
-   <remote-select
-           :query-options="roleQueryOptions"
-           v-model="roleIds"
-           label-prop="name"
-           value-prop="id"
-           multiple
-   >
-   </remote-select>
+  <remote-select
+      :query-options="roleQueryOptions"
+      v-model="roleIds"
+      label-prop="name"
+      value-prop="id"
+      multiple
+  >
+  </remote-select>
 </template>
 ```
 
 ### 源码解析
 
 ```vue
+
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { ElOption, ElSelect } from 'element-plus'
+import { onMounted, ref } from "vue";
+import { ElOption, ElSelect } from "element-plus";
+
 export interface OptionItem {
-  label: string
-  value: string
-}
-const props = withDefaults(
-  defineProps<{
-     // 双向绑定选中的值，单向是string，多选是string[]
-    modelValue: string[] | string
-     // 待选项
-    queryOptions: (query: string) => Promise<Record<string, any>[]>
-     // 是否多选，默认false
-    multiple?: boolean
-     // 待选项中的哪个属性作为label
-    labelProp: string
-     // 待选项中的哪个属性作为value，默认是id
-    valueProp?: string
-  }>(),
-  { multiple: false, valueProp: 'id' }
-)
-//  实现双向绑定，https://cn.vuejs.org/guide/components/v-model.html
-const emit = defineEmits<{ 'update:modelValue': [value: string | string[]] }>()
-// 待选项
-const options = ref<OptionItem[]>([])
-// 等待数据返回时要显示加载动画
-const loading = ref(false)
-const remoteMethod = (keyword: string, enforce: boolean = false) => {
-  if (keyword || enforce) {
-    loading.value = true
-     // 获取带选项
-    props.queryOptions(keyword).then((res) => {
-      options.value = res.map((row) => {
-        return {
-            // 根据映射规则得到label和value
-          label: row[props.labelProp] as string,
-          value: row[props.valueProp]
-        } satisfies OptionItem
-      })
-       // 取消加载动画
-      loading.value = false
-    })
-  }
-}
-const handleChange = (value: string[] | string) => {
-  emit('update:modelValue', value)
+  label: string;
+  value: string;
 }
 
+const props = withDefaults(
+  defineProps<{
+    // 双向绑定选中的值，单向是string，多选是string[]
+    modelValue: string[] | string | undefined
+    // 待选项
+    queryOptions: (query: string) => Promise<Record<string, any>[]>
+    // 是否多选，默认false
+    multiple?: boolean
+    // 待选项中的哪个属性作为label
+    labelProp: string
+    // 待选项中的哪个属性作为value，默认是id
+    valueProp?: string
+  }>(),
+  { multiple: false, valueProp: "id", modelValue: '' }
+);
+//  实现双向绑定，https://cn.vuejs.org/guide/components/v-model.html
+const emit = defineEmits<{ "update:modelValue": [value: string | string[]] }>();
+// 待选项
+const options = ref<OptionItem[]>([]);
+// 等待数据返回时要显示加载动画
+const loading = ref(false);
+const remoteMethod = (keyword: string, enforce: boolean = false) => {
+  if (keyword || enforce) {
+    loading.value = true;
+    // 获取带选项
+    props.queryOptions(keyword.trim()).then((res) => {
+      options.value = res.map((row) => {
+        return {
+          // 根据映射规则得到label和value
+          label: row[props.labelProp] as string,
+          value: row[props.valueProp]
+        } satisfies OptionItem;
+      });
+      // 取消加载动画
+      loading.value = false;
+    });
+  }
+};
+const handleChange = (value: string[] | string) => {
+  emit("update:modelValue", value);
+};
+
 onMounted(() => {
-  remoteMethod('', true)
-})
+  remoteMethod("", true);
+});
 </script>
 <template>
-<!--  el-select组件请参考 https://element-plus.gitee.io/zh-CN/component/select.html -->
+  <!--  el-select组件请参考 https://element-plus.gitee.io/zh-CN/component/select.html -->
   <el-select
     :model-value="modelValue"
     clearable
@@ -774,5 +773,6 @@ onMounted(() => {
     ></el-option>
   </el-select>
 </template>
+
 
 ```
