@@ -100,12 +100,6 @@ public interface UserRoleRel extends BaseEntity {
   @ManyToOne
   @Key
   Role role();
-
-  @IdView
-  String userId();
-
-  @IdView
-  String roleId();
 }
 ```
 
@@ -151,22 +145,11 @@ public interface User extends BaseDateTime {
 
   @OneToMany(mappedBy = "user")
   List<UserRoleRel> roles();
-
-  @ManyToManyView(
-      prop = "roles",
-      deeperProp = "role"
-  )
-  List<Role> rolesView();
-
 }
 ```
 
 :::info
 [BaseEntity](../reference/backend/README.md/#baseentity)包含通用的 editedTime, createdTime。并且会在创建或者更新时自动填写这些字段。
-
-[@ManyToManyView](https://babyfish-ct.gitee.io/jimmer-doc/docs/mapping/advanced/view/many-to-many-view#%E5%88%9D%E8%AF%86manytomanyview)：
-在权限模型中，如果用户需要获得它关联的角色，需要通过下面这种方式获得`List<Role> roles=user.getRoles().map(userRoleRel -> userRoleRel.getRole()).toList();`。
-使用`@ManyToManyView`可以便捷的将`UserRoleRel`中的`Role`获取。
 :::
 
 ## 生成角色增删改查
@@ -189,70 +172,6 @@ input UserInput {
     roleIds: Array<String>
 }
 ```
-
-### 前端实现
-
-使用[RemoteSelect组件](../reference/front/README.md/#远程选择器)即可实现下图效果
-
-:::center
-![图1 选择角色](img_2.png)
-:::
-
-1. 提供待选项获取方法
-
-    ```ts
-    const roleQueryOptions = async (keyword: string) => {
-      return (await api.roleController.query({ body: { query: { name: keyword } } })).content
-    }
-    ```
-
-2. 双向绑定已选的角色
-
-   在user-store.ts中定义了`createForm`，类型是UserInput。在[dto修改](#修改dto)中新增了roleIds，代表前端需要传roleIds。
-
-    ```ts
-    // roleIds和remote-select双向绑定
-    const initForm: UserInput = { roleIds: [], password: '', nickname: '', phone: '' }
-    const createForm = ref<UserInput>(initForm)
-    ```
-
-3. 映射待选项到label和value
-
-    - `label-prop="name"`代表角色的名称映射到el-option的label属性
-    - `value-prop="id""`代表角色的id映射到el-option的value属性（默认就是id，所以这边没填）
-
-4. 汇总
-
-```vue
-<script lang="ts" setup>
-const userStore = useUserStore()
-const { createForm } = storeToRefs(userStore)
-// 获取角色列表
-const roleQueryOptions = async (keyword: string) => {
-  return (await api.roleController.query({ body: { query: { name: keyword } } })).content
-}
-</script>
-<template>
-  <div class="create-form">
-    <el-form ref="createFormRef" :model="createForm" :rules="rules" class="form" labelWidth="120">
-      <el-form-item label="角色">
-        <!--  双向绑定和定义映射 -->
-        <remote-select
-          :query-options="roleQueryOptions"
-          v-model="createForm.roleIds"
-          label-prop="name"
-          multiple
-        >
-        </remote-select>
-      </el-form-item>
-    </el-form>
-  </div>
-</template>
-```
-
-:::info
-[RemoteSelect组件](../reference/front/README.md#远程选择器)：快速选择远程数据
-:::
 
 ### 后端实现
 
@@ -301,6 +220,79 @@ public String save(UserInput userInput) {
 }
 ```
 
+### 前端实现
+
+使用[RemoteSelect组件](../reference/front/README.md/#远程选择器)即可实现下图效果
+
+:::center
+![图1 选择角色](img_2.png)
+:::
+
+1. 提供待选项获取方法
+
+    ```ts
+    const roleQueryOptions = async (keyword: string) => {
+      return (await api.roleController.query({ body: { query: { name: keyword } } })).content
+    }
+    ```
+
+2. 双向绑定已选的角色
+
+   在user-store.ts中定义了`createForm`，类型是UserInput。在[dto修改](#修改dto)中新增了roleIds，代表前端需要传roleIds。
+
+    ```ts
+    // roleIds和remote-select双向绑定
+    const initForm: UserInput = { roleIds: [], password: '', nickname: '', phone: '' }
+    const createForm = ref<UserInput>(initForm)
+    ```
+
+3. 映射待选项到label和value
+
+    ```vue
+    <remote-select
+            :query-options="roleQueryOptions"
+            v-model="updateForm.roleIds"
+            label-prop="name"
+            multiple
+          >
+    ```
+
+    - `label-prop="name"`代表角色的名称映射到el-option的label属性
+    - `value-prop="id""`代表角色的id映射到el-option的value属性（默认就是id，所以这边没填）
+
+4. 汇总
+
+```vue
+<script lang="ts" setup>
+const userStore = useUserStore()
+const { createForm } = storeToRefs(userStore)
+// 获取角色列表
+const roleQueryOptions = async (keyword: string) => {
+  return (await api.roleController.query({ body: { query: { name: keyword } } })).content
+}
+</script>
+<template>
+  <div class="create-form">
+    <el-form ref="createFormRef" :model="createForm" :rules="rules" class="form" labelWidth="120">
+      <el-form-item label="角色">
+        <!--  双向绑定和定义映射 -->
+        <remote-select
+          :query-options="roleQueryOptions"
+          v-model="createForm.roleIds"
+          label-prop="name"
+          multiple
+        >
+        </remote-select>
+      </el-form-item>
+    </el-form>
+  </div>
+</template>
+```
+
+:::info
+[RemoteSelect组件](../reference/front/README.md#远程选择器)：快速选择远程数据
+:::
+
 ## 编辑用户（回显）修改角色
 
 当创建完用户之后，当编辑用户的时候需要显示用户已有的角色。
@@ -314,21 +306,25 @@ public String save(UserInput userInput) {
 `rolesView`是`roles`的视图属性，获得`UserRoleRel`中的`role`得到`List<Role>`。
 
 ```java
- @OneToMany(mappedBy = "user")
- List<UserRoleRel> roles();
- @ManyToManyView(
-         prop = "roles",
-         deeperProp = "role"[]()
- )
- List<Role> rolesView();
+  @ManyToManyView(
+      prop = "roles",
+      deeperProp = "role"
+  )
+  List<Role> rolesView();
 ```
+
+:::info
+[@ManyToManyView](https://babyfish-ct.gitee.io/jimmer-doc/docs/mapping/advanced/view/many-to-many-view#%E5%88%9D%E8%AF%86manytomanyview)：
+在权限模型中，如果用户需要获得它关联的角色，需要通过下面这种方式获得`List<Role> roles=user.getRoles().map(userRoleRel -> userRoleRel.getRole()).toList();`。
+使用`@ManyToManyView`可以便捷的将`UserRoleRel`中的`Role`获取。
+:::
 
 ### 属性抓取
 
 在`UserRepository`中定义了一个通用的对象抓取器。在这个数据抓取，`.allScalarFields()`代表抓取普通属性。后面又新增了`rolesView(RoleFetcher.$.name())`抓取角色视图且列表中的角色只抓取name字段，这样就可以返用户关联的角色。
 
 ```java
-UserFetcher COMPLEX_FETCHER = UserFetcher.$.allScalarFields().rolesView(RoleFetcher.$.name());
+UserFetcher USER_ROLE_FETCHER = UserFetcher.$.allScalarFields().rolesView(RoleFetcher.$.name());
 ```
 
 返回的结果，可以看见除了普通属性之外，还包含了一个视图属性rolesView
@@ -368,6 +364,22 @@ UserFetcher COMPLEX_FETCHER = UserFetcher.$.allScalarFields().rolesView(RoleFetc
 - 关联属性，一对一，一对多，多对一，多对多
 - 视图属性，就像上面的rolesView，就是一种视图属性
   :::
+
+### 返回形状
+
+之前的查询用户信息并没有返回角色信息。将`UserController`中的用户信息查询接口返回形状指定为`USER_ROLE_FETCHER`
+
+```java
+  @GetMapping("{id}")
+  public @FetchBy(value = "USER_ROLE_FETCHER") User findById(
+      @PathVariable String id) {
+    return userService.findById(id);
+  }
+  @GetMapping("user-info")
+  public @FetchBy(value = "USER_ROLE_FETCHER") User getUserInfo() {
+    return userService.getUserInfo();
+  }
+```
 
 ### 前端遍历获取roleId
 
