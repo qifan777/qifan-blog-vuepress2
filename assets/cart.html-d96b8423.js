@@ -1,0 +1,1 @@
+import{_ as t}from"./plugin-vue_export-helper-c27b6911.js";import{o as a,c as r,e,f as c}from"./app-746ae3e8.js";const o={},s=e("h1",{id:"购物车",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#购物车","aria-hidden":"true"},"#"),c(" 购物车")],-1),n=[s];function _(d,i){return a(),r("div",null,n)}const l=t(o,[["render",_],["__file","cart.html.vue"]]);export{l as default};
