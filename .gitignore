@@ -31,3 +31,4 @@ blog/.vuepress/.cache/
 blog/.vuepress/.temp/
 blog/.vuepress/dist/
 /blog/.vuepress/blog/
+/blog/.vuepress/scripts/

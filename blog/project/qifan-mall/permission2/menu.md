@@ -1,3 +1,14 @@
+---
+category:
+  - 起凡商城
+tag:
+  - 菜单
+  - 权限管理
+
+order: 2
+date: 2024-01-16
+timeline: true
+---
 # 角色菜单
 
 ## 建表
@@ -223,6 +234,34 @@ export const buildMenuTree = (
 }
 ```
 
+#### 菜单树组件
+
+```vue
+<script setup lang="ts">
+import type { MenuTreeDto } from '@/typings'
+
+const defaultProps = {
+  children: 'children',
+  label: 'name'
+}
+defineProps<{ menuTree: MenuTreeDto[] }>()
+defineSlots<{
+  default(props: { node: { label: string }; data: MenuTreeDto }): void
+}>()
+</script>
+
+<template>
+  <el-tree :data="menuTree" :props="defaultProps" v-bind="$attrs">
+    <template #default="{ node, data }: { node: { label: string }; data: MenuTreeDto }">
+      <slot :node="node" :data="data"></slot>
+    </template>
+  </el-tree>
+</template>
+
+<style scoped lang="scss"></style>
+
+```
+
 #### 菜单树选择
 
 加载所有的菜单在前端构建菜单树。并获取用户选择的菜单。
@@ -243,6 +282,20 @@ const handleNodeCheckChange = (
 ) => {
   createForm.value.menuIds = value2.checkedKeys
 }
+```
+
+```html
+      <el-form-item label="菜单">
+        <menu-tree
+          :menu-tree="menuTreeList"
+          show-checkbox
+          check-strictly
+          nodeKey="id"
+          @check="handleNodeCheckChange"
+        >
+          <template v-slot:default="{ node }">{{ node.label }} </template>
+        </menu-tree>
+      </el-form-item>
 ```
 
 ## 修改角色回显菜单
