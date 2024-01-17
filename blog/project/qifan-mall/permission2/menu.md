@@ -119,6 +119,10 @@ public interface RoleMenuRel extends BaseEntity {
 
 ## 菜单父亲选择
 
+:::center
+![父亲菜单选择](image.png)
+:::
+
 ### 创建时选择父亲菜单
 
 ```ts
@@ -171,6 +175,12 @@ const menuQueryOptions = async (keyword: string, parentId: string) => {
 ```
 
 ## 创建角色配置菜单
+
+:::center
+
+![树形菜单选择](image-1.png)
+
+:::
 
 ### Dto新增MenuIds
 
