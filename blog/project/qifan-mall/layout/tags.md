@@ -6,7 +6,7 @@ tag:
   - 权限管理
   - 后台框架
 
-order: 1
+order: 3
 date: 2024-01-18
 timeline: true
 ---
@@ -290,11 +290,14 @@ import { ArrowLeftBold, ArrowRightBold } from '@element-plus/icons-vue'
 const tagStore = useTagStore()
 const tagWrapperRef = ref<HTMLDivElement>()
 const scroll = (direction: 'right' | 'left') => {
-  tagWrapperRef.value?.scrollTo({
-    left: tagWrapperRef.value?.scrollLeft + direction == 'right' ? 100 : -100,
-    behavior: 'smooth'
-  })
+  if (tagWrapperRef.value) {
+    tagWrapperRef.value.scrollTo({
+      left: tagWrapperRef.value.scrollLeft + (direction == 'right' ? 100 : -100),
+      behavior: 'smooth'
+    })
+  }
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -443,11 +446,12 @@ const router = createRouter({
   ]
 })
 // 添加路由拦截，在进入路由之前需要校验是否有该菜单的权限
+const whiteList = ['/login', '/register', '/']
 router.beforeEach(async (to, from, next) => {
   const homeStore = useHomeStore()
   if (
-    (await homeStore.getMenuList()).findIndex((menu) => menu.path === to.path) >= 0 ||
-    to.path === '/'
+    whiteList.includes(to.path) ||
+    (await homeStore.getMenuList()).findIndex((menu) => menu.path === to.path) >= 0
   ) {
     next()
   } else {
