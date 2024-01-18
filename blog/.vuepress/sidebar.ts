@@ -33,6 +33,7 @@ export default sidebar({
         {text: "登录注册", prefix: "login/", children: 'structure'},
         "dict",
         {text: "权限", prefix: "permission/", children: "structure"},
+        {text:"后台框架",prefix:"layout",children:"structure"},
         {text: "参考", prefix: "reference/", children: "structure"},
     ],
     "/knowledge/newland/": [
