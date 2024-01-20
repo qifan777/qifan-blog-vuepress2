@@ -34,7 +34,12 @@ export default sidebar({
         "dict",
         {text: "权限", prefix: "permission/", children: "structure"},
         {text:"后台框架",prefix:"layout",children:"structure"},
-        {text: "参考", prefix: "reference/", children: "structure"},
+        {text:"商品管理",prefix:"product",children:'structure'},
+        {text: "参考", prefix: "reference/", children: [
+            "front",
+            "backend",
+            "generator"
+        ]},
     ],
     "/knowledge/newland/": [
         {text: "云边实体登记自动化", link: "/knowledge/newland/"},

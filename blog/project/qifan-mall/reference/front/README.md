@@ -776,3 +776,249 @@ onMounted(() => {
 
 
 ```
+
+## 标签列表输入组件
+
+标签选择器，可以添加标签，修改标签，删除标签。
+
+![标签列表](./tag-input.png)
+
+```vue
+<template>
+  <div class="values-chose">
+    <div class="values">
+      <!-- 显示当内的多个值，用','连接多个值 -->
+      <el-input
+        class="values-show"
+        size="small"
+        readonly
+        :model-value="props.modelValue"
+      ></el-input>
+    </div>
+    <div class="values-input">
+      <template v-for="(tag, index) in tags" :key="tag">
+        <!-- 编辑值 -->
+        <el-input
+          v-if="editIndex === index"
+          v-model="editInputValue"
+          class="value value-edit"
+          size="small"
+          @blur="handleEditConfirm"
+          @keydown.enter="handleEditConfirm"
+        ></el-input>
+        <!-- 显示值 -->
+        <el-tag
+          v-else
+          class="value"
+          closable
+          :disable-transitions="false"
+          @close="handleClose(index)"
+          @click="handleEdit(index)"
+          >{{ tag }}</el-tag
+        >
+      </template>
+      <!-- 点击新增显示输入框，否则显示新增按钮  -->
+      <el-input
+        v-if="inputVisible"
+        ref="inputRef"
+        v-model="inputValue"
+        class="value-input"
+        size="small"
+        @blur="handleInputConfirm"
+        @keydown.enter="handleInputConfirm"
+      ></el-input>
+      <el-button v-else size="small" @click="showInput"> + 新增值 </el-button>
+    </div>
+  </div>
+</template>
+<script lang="ts" setup>
+import { computed, nextTick, ref } from 'vue'
+import { ElButton, ElInput, ElTag } from 'element-plus'
+
+const props = defineProps({ modelValue: { type: Array<string>, required: false, default: '' } })
+const emit = defineEmits<{ 'update:modelValue': [values: string[]] }>()
+
+const tags = computed({
+  get: () => {
+    return props.modelValue ? props.modelValue : []
+  },
+  set: (values) => {
+    emit('update:modelValue', values)
+  }
+})
+// 编辑值
+const editIndex = ref(-1)
+const editInputValue = ref('')
+// 点击值标签，显示输入框编辑值
+const handleEdit = (index: number) => {
+  editInputValue.value = tags.value[index]
+  editIndex.value = index
+}
+// 编辑值输入框确认
+const handleEditConfirm = () => {
+  if (editInputValue.value === tags.value[editIndex.value]) {
+    return
+  }
+  tags.value[editIndex.value] = editInputValue.value
+  tags.value = [...tags.value]
+  editIndex.value = -1
+}
+// 点击值标签的右上角触发删除值
+const handleClose = (index: number) => {
+  tags.value.splice(index, 1)
+  tags.value = [...tags.value]
+}
+
+// 新增值
+const inputRef = ref<InstanceType<typeof ElInput>>()
+const inputVisible = ref(false)
+const inputValue = ref('')
+const handleInputConfirm = () => {
+  if (inputValue.value) {
+    tags.value = [...tags.value, inputValue.value]
+  }
+  inputVisible.value = false
+  inputValue.value = ''
+}
+const showInput = () => {
+  inputVisible.value = true
+  nextTick(() => {
+    if (inputRef.value && inputRef.value.input) {
+      inputRef.value.input.focus()
+    }
+  })
+}
+</script>
+
+<style lang="scss" scoped>
+.values {
+  display: flex;
+  justify-content: flex-start;
+
+  .values-show {
+    width: 100px;
+  }
+}
+
+.values-input {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  .value-edit {
+    width: 100px;
+  }
+
+  .value {
+    margin-right: 5px;
+  }
+
+  .value-input {
+    width: 100px;
+  }
+}
+</style>
+
+```
+
+## 键值对输入组件
+
+:::center
+![键值对输入](key-value.png)
+:::
+
+```vue
+<template>
+  <div class="key-value-section">
+    <div class="key-value-wrapper" v-for="(keyValue, index) in keyValueList" :key="index">
+      <el-button
+        class="close-btn"
+        type="warning"
+        size="small"
+        circle
+        @click="deleteKeyValue(index)"
+      >
+        <el-icon>
+          <close></close>
+        </el-icon>
+      </el-button>
+      <el-form label-width="80" label-position="left">
+        <el-form-item label="键名称">
+          <el-input style="width: 100px" v-model="keyValueList[index].name" size="small">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="值列表">
+          <values-input v-model="keyValueList[index].values"></values-input>
+        </el-form-item>
+      </el-form>
+    </div>
+    <el-button type="primary" size="small" class="plus" @click="addKeyValue">
+      <el-icon>
+        <plus></plus>
+      </el-icon>
+    </el-button>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { Close, Plus } from '@element-plus/icons-vue'
+import ValuesInput from '@/views/product/components/value-input.vue'
+import type { KeyValue } from '@/apis/__generated/model/static'
+
+const props = defineProps<{ modelValue?: KeyValue[] }>()
+const emit = defineEmits<{
+  change: [data: KeyValue[]]
+  'update:modelValue': [data: KeyValue[]]
+}>()
+const keyValueList = ref<KeyValue[]>([])
+const deleteKeyValue = (index: number) => {
+  keyValueList.value.splice(index, 1)
+}
+const addKeyValue = () => {
+  keyValueList.value.push({
+    name: '',
+    values: []
+  })
+}
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue) {
+      keyValueList.value = newValue
+    }
+  }
+)
+watch(
+  () => keyValueList.value,
+  () => {
+    emit('update:modelValue', keyValueList.value)
+  },
+  { deep: true }
+)
+</script>
+
+<style lang="scss" scoped>
+.key-value-section {
+  width: 100%;
+  .plus {
+    margin-top: 20px;
+  }
+  .key-value-wrapper {
+    margin-bottom: 20px;
+    border: rgba(114, 207, 222, 0.5) 1px dashed;
+    padding: 10px;
+    position: relative;
+    margin-top: 20px;
+    .close-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 15px;
+      height: 15px;
+    }
+  }
+}
+</style>
+```
