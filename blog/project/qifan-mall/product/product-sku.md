@@ -146,7 +146,7 @@ sku的生成是基于商品的属性进行排列组合生成的. 如手机sku, (
 ### 存储商品属性
 
 ```ts
-const attributes = ref<Attribute[]>([])
+const attributes = ref<KeyValue[]>([])
 const skuList = ref<ProductSkuInput[]>([])
 const handleProductChange = (id: string) => {
   api.productController.findById({ id }).then((res) => {
@@ -330,7 +330,6 @@ watch(
   () => createForm.value,
   () => {
     skuList.value = skuList.value.map((sku) => {
-      console.log(sku.values)
       return { ...sku, ...createForm.value, values: sku.values }
     })
   },
@@ -357,6 +356,36 @@ const handleProductChange = (id: string) => {
   })
 }
 
+```
+
+### 批量创建sku
+
+`ProductSkuController`
+
+```java
+  @PostMapping("save-batch")
+  public Boolean saveBatch(@RequestBody List<ProductSkuInput> productSkus) {
+    productSkus.forEach(productSkuService::save);
+    return true;
+  }
+```
+
+调用接口批量新增sku
+`product-sku-create-form`
+
+```ts
+const handleConfirm = () => {
+  createFormRef.value?.validate(
+    assertFormValidate(() =>
+      api.productSkuController.saveBatch({ body: skuList.value }).then(async (res) => {
+        assertSuccess(res).then(() => {
+          closeDialog()
+          reloadTableData()
+        })
+      })
+    )
+  )
+}
 ```
 
 ## 组合值查询条件
