@@ -38,7 +38,12 @@ export default sidebar({
         {text: "参考", prefix: "reference/", children: [
             "front",
             "backend",
-            "generator"
+            "generator",
+            {
+                text:"小程序端",
+                prefix:"mp",
+                children:"structure"
+            }
         ]},
     ],
     "/knowledge/newland/": [
