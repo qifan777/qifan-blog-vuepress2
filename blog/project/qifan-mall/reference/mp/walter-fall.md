@@ -1,3 +1,12 @@
+---
+category:
+  - 起凡商城
+  - 小程序
+tag:
+  - 瀑布流
+date: 2024-01-23
+timeline: true
+---
 # 瀑布流组件
 
 ![效果](../../product/walter-fall.png)

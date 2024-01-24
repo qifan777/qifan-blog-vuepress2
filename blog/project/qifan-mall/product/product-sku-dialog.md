@@ -1,3 +1,14 @@
+---
+category:
+  - 起凡商城
+tag:
+  - 商品管理
+  - 商品SKU
+  - 小程序
+order: 6
+date: 2024-01-23
+timeline: true
+---
 
 # 小程序商品sku选择
 

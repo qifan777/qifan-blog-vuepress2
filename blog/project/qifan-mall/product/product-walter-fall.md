@@ -1,3 +1,16 @@
+---
+category:
+  - 起凡商城
+tag:
+  - 商品管理
+  - 瀑布流
+  - 小程序
+
+order: 4
+date: 2024-01-22
+timeline: true
+---
+
 # 小程序商品瀑布流
 
 :::center
@@ -38,6 +51,6 @@ pageData中的数据会在进入页面时自动加载，触底时也会自动加
 ```
 
 :::info
-[product-cover](../reference/mp/product-cover.md)商品封面组件
+[product-cover](../reference/mp/product-cover.md)商品纵向详情组件
 [walter-fall](../reference/mp/walter-fall.md)瀑布流布局组件
 :::

@@ -1,3 +1,13 @@
+---
+category:
+  - 起凡商城
+  - 小程序
+tag:
+  - 商品详情
+date: 2024-01-21
+timeline: true
+---
+
 # 商品横向详情
 
 ::::tabs

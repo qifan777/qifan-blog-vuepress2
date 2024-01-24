@@ -1,3 +1,12 @@
+---
+category:
+  - 起凡商城
+  - 小程序
+tag:
+  - 商品SKU
+date: 2024-01-24
+timeline: true
+---
 # 商品SKU对话框
 
 ## 效果

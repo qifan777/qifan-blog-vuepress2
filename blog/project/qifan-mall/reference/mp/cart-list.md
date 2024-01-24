@@ -1,4 +1,15 @@
+---
+category:
+  - 小程序
+  - 起凡商城
+tag:
+  - 购物车
+date: 2024-01-23
+timeline: true
+---
 # 购物车
+
+![购物车](../../product/cart-list.png =x350)
 
 ## 购物车store
 
@@ -27,11 +38,12 @@ export const useCartStore = defineStore("cart", () => {
   watchEffect(() => {
     Taro.setStorageSync("cart", JSON.stringify(cartList.value));
   });
+  const checkedItems = computed(() =>
+    cartList.value.filter((item) => item.checked),
+  );
   // 总价
   const totalPrice = computed(() =>
-    cartList.value
-      // 过滤掉未选中的商品
-      .filter((item) => item.checked)
+    checkedItems.value
       // 计算每个商品的总价
       .map((item) => item.count * item.sku.price)
       // 求和
@@ -66,15 +78,25 @@ export const useCartStore = defineStore("cart", () => {
   const clearCart = () => {
     cartList.value = [];
   };
+  // 全选或者反选
+  const toggleCart = () => {
+    // 如果已选的数量等于购物车数量反向否则全勋。
+    const value = checkedItems.value.length !== cartList.value.length;
+    cartList.value.forEach((item) => {
+      item.checked = value;
+    });
+  };
 
   return {
     visible,
+    checkedItems,
     cartList,
     totalPrice,
     pushItem,
     plusItem,
     minusItem,
     clearCart,
+    toggleCart,
   };
 });
 

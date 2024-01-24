@@ -1,4 +1,13 @@
-# 商品封面
+---
+category:
+  - 起凡商城
+  - 小程序
+tag:
+  - 商品详情
+date: 2024-01-20
+timeline: true
+---
+# 商品纵向详情
 
 ![效果](./product-cover.png)
 
