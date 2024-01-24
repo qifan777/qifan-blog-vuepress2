@@ -60,8 +60,6 @@ export const usePageHelper = <T extends Object, E>(
     likeMode: "ANYWHERE",
     sorts: [{ property: "createdTime", direction: "DESC" }],
   }) as Ref<QueryRequest<T>>;
-  // 加载动画
-  const loading = ref(false);
   // 控制是否到底
   const finish = ref(false);
 
@@ -84,7 +82,9 @@ export const usePageHelper = <T extends Object, E>(
     } as T;
     if (finish.value) return;
     // 显示加载动画
-    loading.value = true;
+    Taro.showLoading({
+      title: "加载中",
+    });
     // 调用查询接口
     queryApi.apply(object, [{ body: queryRequest.value }]).then(
       (res: PageResult<E>) => {
@@ -96,16 +96,16 @@ export const usePageHelper = <T extends Object, E>(
         finish.value = res.content.length < res.size;
         queryRequest.value.pageNum = (queryRequest.value.pageNum || 1) + 1;
         // 取消加载动画
-        loading.value = false;
+        Taro.hideLoading();
       },
       (res) => {
         console.log(res);
+        Taro.hideLoading();
       },
     );
   };
   // 忽略...
   return {
-    loading,
     queryRequest,
     pageData,
     loadPageData,
@@ -135,7 +135,6 @@ export const usePageHelper = <T extends Object, E>(
     loadPageData();
   });
   return {
-    loading,
     queryRequest,
     pageData,
     loadPageData,
@@ -167,7 +166,6 @@ export const usePageHelper = <T extends Object, E>(
     loadPageData();
   });
   return {
-    loading,
     queryRequest,
     pageData,
     loadPageData,
@@ -209,7 +207,6 @@ export const usePageHelper = <T extends Object, E>(
     }, 300);
   });
   return {
-    loading,
     queryRequest,
     pageData,
     loadPageData,
@@ -258,7 +255,6 @@ export const usePageHelper = <T extends Object, E>(
     likeMode: "ANYWHERE",
     sorts: [{ property: "createdTime", direction: "DESC" }],
   }) as Ref<QueryRequest<T>>;
-  const loading = ref(false);
   const finish = ref(false);
 
   // 请求分页数据
@@ -280,7 +276,9 @@ export const usePageHelper = <T extends Object, E>(
     } as T;
     if (finish.value) return;
     // 显示加载动画
-    loading.value = true;
+    Taro.showLoading({
+      title: "加载中",
+    });
     // 调用查询接口
     queryApi.apply(object, [{ body: queryRequest.value }]).then(
       (res: PageResult<E>) => {
@@ -292,10 +290,11 @@ export const usePageHelper = <T extends Object, E>(
         finish.value = res.content.length < res.size;
         queryRequest.value.pageNum = (queryRequest.value.pageNum || 1) + 1;
         // 取消加载动画
-        loading.value = false;
+        Taro.hideLoading();
       },
       (res) => {
         console.log(res);
+        Taro.hideLoading();
       },
     );
   };
@@ -323,7 +322,6 @@ export const usePageHelper = <T extends Object, E>(
     loadPageData();
   });
   return {
-    loading,
     queryRequest,
     pageData,
     loadPageData,
