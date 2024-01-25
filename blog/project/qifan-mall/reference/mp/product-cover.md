@@ -11,7 +11,9 @@ timeline: true
 
 ![效果](./product-cover.png)
 
-## 骨架
+## 源码解析
+
+### 骨架
 
 从上到下分别显示
 
@@ -60,7 +62,7 @@ timeline: true
 mode="widthFix"可以使得图片的宽度固定，高度自适应
 :::
 
-## 封面和标题
+### 封面和标题
 
 :::tabs
 @tab html
@@ -135,7 +137,7 @@ withDefaults(
 
 :::
 
-## 标签价格品牌
+### 标签价格品牌
 
 :::tabs
 @tab html

@@ -13,7 +13,7 @@ timeline: true
 
 # 商品管理
 
-![商品信息](image_1.png)
+![商品信息](image_1.png =x350)
 
 ## 建表
 

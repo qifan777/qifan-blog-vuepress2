@@ -12,7 +12,7 @@ timeline: true
 
 # 小程序商品sku选择
 
-![小程序商品sku选择对话框](./product-sku-dialog.png)
+![小程序商品sku选择对话框](./product-sku-dialog.png =x350)
 
 ## 后端加载商品详情
 

@@ -14,7 +14,7 @@ timeline: true
 # 商品SKU
 
 :::center
-![sku创建](image-1.png)
+![sku创建](image-1.png =x350)
 :::
 
 ## 建表

@@ -11,9 +11,11 @@ timeline: true
 
 ## 效果
 
-![商品SKU对话框](../../product/product-sku-dialog.png)
+![商品SKU对话框](../../product/product-sku-dialog.png =x350)
 
-## 对话框
+## 源码解析
+
+### 对话框
 
 :::tabs
 @tab html
@@ -49,7 +51,7 @@ const emit = defineEmits<{
 
 :::
 
-## 对话框内滚动区域
+### 对话框内滚动区域
 
 :::tabs
 @tab html
@@ -93,7 +95,7 @@ const emit = defineEmits<{
 
 :::
 
-## 商品SKU展示骨架
+### 商品SKU展示骨架
 
 :::tabs
 @tab html
@@ -135,7 +137,7 @@ const emit = defineEmits<{
 
 :::
 
-## sku选择
+### sku选择
 
 :::tabs
 @tab html
@@ -299,7 +301,7 @@ onMounted(() => {
 
 :::
 
-## 封面/名称/描述
+### 封面/名称/描述
 
 :::tabs
 
@@ -372,7 +374,7 @@ onMounted(() => {
 
 :::
 
-## 加入购物车
+### 加入购物车
 
 :::tabs
 @tab html

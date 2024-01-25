@@ -9,7 +9,7 @@ timeline: true
 ---
 # 瀑布流组件
 
-![效果](../../product/walter-fall.png)
+![效果](../../product/walter-fall.png =x350)
 
 ## 网格布局左右两列
 
@@ -120,7 +120,7 @@ const rightList = computed(() =>
 
 :::
 
-## 汇总
+## 源码
 
 ```vue
 <template>

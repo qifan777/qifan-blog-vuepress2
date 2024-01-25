@@ -10,6 +10,7 @@ timeline: true
 
 # 商品横向详情
 
+![商品横向详情](./product-row.png)
 ::::tabs
 @tab 骨架
 

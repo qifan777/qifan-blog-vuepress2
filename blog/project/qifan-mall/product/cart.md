@@ -11,7 +11,7 @@ date: 2024-01-24
 timeline: true
 ---
 
-# 购物车
+# 小程序购物车
 
 ![购物车](./cart-list.png =x350)
 
