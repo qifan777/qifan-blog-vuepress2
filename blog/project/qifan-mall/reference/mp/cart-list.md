@@ -152,7 +152,7 @@ const cartStore = useCartStore();
 const { visible, totalPrice } = storeToRefs(cartStore);
 const emit = defineEmits<{ submit: [value: CartItem[]] }>();
 const submit = () => {
-  emit("submit", cartStore.cartList);
+  emit("submit", cartStore.checkedItems);
 };
 ```
 

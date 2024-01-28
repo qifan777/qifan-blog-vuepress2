@@ -18,11 +18,15 @@ projects:
     desc: spring websocket/stream 请求/markdown/vue3
     link: /project/chatgpt-assistant/
 
-  - icon: project
+  - icon: /assets/icon/microservice.png
     name: 多模块微服务实战
     desc: 用maven构建多模块的项目，每个项目采用六边形领域驱动架构。最后用docker部署
     link: /project/microservice-practice/book.html
 
+  - icon: /assets/icon/shop.png
+    name: 起凡商城
+    desc: 全栈项目，电商经典业务商品规格，优惠券，订单状态机，支付，拉新营销等等
+    link: /project/qifan-mall/
 
 footer: 联系方式：ljc666max
 ---
