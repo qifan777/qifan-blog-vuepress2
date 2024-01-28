@@ -1,4 +1,4 @@
 ---
-title: 权限
+title: 登录注册
 index: false
 ---

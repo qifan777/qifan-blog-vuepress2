@@ -1,4 +1,4 @@
 ---
-title: 权限
+title: 商品
 index: false
 ---
