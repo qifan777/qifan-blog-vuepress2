@@ -130,6 +130,28 @@ public interface Dict extends BaseEntity {
 
 ### 字典缓存
 
+这段代码定义了一个名为 `queryDict` 的函数，用于查询字典数据，并利用了字典缓存机制来提高查询性能。下面是详细的解释：
+
+1. 导入类型：
+   - 从项目中生成的API类型模块导入了 `DictSpec`（字典查询规格）和 `Page`（分页结果集），以及 `DictDto` 类型。
+   - 导入了自定义的API实例 `api`。
+
+2. 定义一个名为 `dictMap` 的记录类型的变量，它是一个键值对对象，其中键为数字类型，值为一个Promise，表示字典数据的异步查询结果。
+
+3. `queryDict` 函数接收一个 `DictSpec` 类型的参数，该参数包含了要查询的字典ID以及其他可能的查询条件。
+
+4. 在函数内部首先检查传入的 `dictSpec` 是否包含 `dictId`，若不包含则直接返回，表明没有有效的查询条件。
+
+5. 若包含 `dictId`，则查找 `dictMap` 中是否存在对应的查询结果Promise。如果存在，则直接返回这个Promise，避免重复请求。
+
+6. 如果不存在，则发起一个新的API请求调用 `api.dictController.query` 方法，根据 `dictSpec` 和固定的分页信息（每页1000条记录，按照 `dictId` 升序排列）进行查询。
+
+7. 将此次查询的Promise结果保存到 `dictMap` 中对应 `dictId` 的位置上，以供后续相同查询时直接使用。
+
+8. 最后返回此次查询的Promise结果。
+
+通过这种方式，`queryDict` 函数实现了基于字典ID的缓存策略，当多次请求相同的字典数据时，只需执行一次API请求，从而提高了应用程序的响应速度和性能。
+
 ```ts
 const dictMap: Record<number, Promise<Page<DictDto['DictRepository/COMPLEX_FETCHER']>>> = {}
 export const queryDict = (dictSpec: DictSpec) => {
@@ -155,6 +177,21 @@ export const queryDict = (dictSpec: DictSpec) => {
 ```
 
 ### 字典翻译
+
+Vue组件在挂载时根据传入的`dictId`属性从服务器加载指定字典ID的字典项列表，然后在模板中展示与`value`属性（英文名称）匹配的字典项的中文键名。
+
+具体步骤如下：
+
+1. 在`<script setup>`部分：
+   - 定义接收的props `dictId` 和可选的 `value`。
+   - 创建一个响应式变量 `options` 用于存储查询到的字典数据。
+   - 使用 `onMounted` 钩子，在组件挂载后异步调用 `queryDict` 函数获取指定ID的字典数据，并将结果赋值给 `options.value`。
+   - 定义计算属性 `keyName`，遍历 `options.value` 中的字典项查找与 `props.value` 匹配的项（通过 `keyEnName` 字段），返回找到的项的 `keyName`；如果没找到则返回空字符串。
+
+2. 在 `<template>` 部分：
+   - 渲染计算属性 `keyName` 的值，当找到匹配的字典项时显示其对应的中文键名。
+
+总之，这个组件主要用于动态翻译和展示用户提供的英文字典项名称对应的实际中文含义。
 
 ```vue
 <script setup lang="ts">

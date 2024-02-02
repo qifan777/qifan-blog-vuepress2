@@ -224,7 +224,7 @@ const submit = () => {
 :::tabs
 @tab html
 
-```html {10-29}
+```html
 <template>
   <nut-popup
     ref="popup"
@@ -262,7 +262,7 @@ const submit = () => {
 
 @tab css
 
-```scss {8-16}
+```scss
 // 多行溢出scss函数
 @import "../../app.scss";
 .cart-content {
@@ -293,7 +293,7 @@ const submit = () => {
 :::tabs
 @tab html
 
-```html {26-37}
+```html
 <template>
   <nut-popup
     ref="popup"
@@ -341,7 +341,7 @@ const submit = () => {
 
 @tab ts
 
-```ts {9}
+```ts
 import { storeToRefs } from "pinia";
 import { type CartItem, useCartStore } from "./cart-store";
 import { Del, Minus, Plus } from "@nutui/icons-vue-taro";
@@ -360,7 +360,7 @@ const submit = () => {
 
 @tab css
 
-```scss {16-24}
+```scss
 // 多行溢出scss函数
 @import "../../app.scss";
 .cart-content {
@@ -401,7 +401,7 @@ const submit = () => {
 :::tabs
 @tab html
 
-```html {10-24}
+```html
 <template>
   <nut-popup
     ref="popup"
@@ -439,7 +439,7 @@ const submit = () => {
 - clearCart清空购物车方法, toggleCart全选/反选购物车方法
 - isIndeterminate是否选中状态，介于反选和全选中间即是`indeterminate`. 传给`nut-chekbox`组件。
 
-```ts {8,9,16-21}
+```ts
 import { storeToRefs } from "pinia";
 import { type CartItem, useCartStore } from "./cart-store";
 import { Del, Minus, Plus } from "@nutui/icons-vue-taro";

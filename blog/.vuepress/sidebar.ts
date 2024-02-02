@@ -37,7 +37,7 @@ export default sidebar({
         {text:"商品管理",prefix:"product",children:'structure'},
         {text:"用户中心",prefix:"user",children:'structure'},
         {text:"地址",prefix:"address",children:'structure'},
-
+        {text:"订单",prefix:"order",children:'structure'},
         {text: "参考", prefix: "reference/", children: [
             "front",
             "backend",

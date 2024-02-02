@@ -70,8 +70,8 @@ public enum ItemType {
 </center>
 
 - [dto](https://babyfish-ct.gitee.io/jimmer-doc/docs/object/view/dto-language/#3-viewinput%E5%92%8Cspecification)：根据entity生成dto
-    - Input：inputDto用于接收前端的参数，比如修改和创建场景，可以定义哪些字段不能为空。
-    - Spec：specDto用于前端的查询，因为查询条件字段不一定对应实体的字段，且查询条件的字段都是可选的。
+  - Input：inputDto用于接收前端的参数，比如修改和创建场景，可以定义哪些字段不能为空。
+  - Spec：specDto用于前端的查询，因为查询条件字段不一定对应实体的字段，且查询条件的字段都是可选的。
 - controller：save（创建，更新）、findById（根据id查询）、query（查询）、delete(批量删除).
 - service：对应controller中的api。
 - repository：jimmer通用增删改查。
@@ -241,6 +241,7 @@ public class MenuController {
 </center>
 
 View页面内包含了Query, Table, Dialog。三个组件。View页面组合这些组件并将页面注册到路由中用于访问。
+
 ```vue
 <script lang="ts" setup>
 import MenuTable from './components/MenuTable.vue'
@@ -252,15 +253,14 @@ import MenuDialog from './components/MenuDialog.vue'
     <MenuQuery></MenuQuery>
     <MenuDialog></MenuDialog>
     <MenuTable></MenuTable>
-  </div>
+  </div> 
 </template>
 
 <style lang="scss" scoped></style>
 
 ```
+
 ### Query
-
-
 
 Query组件点击查询会携带当前的条件去分页请求数组并且刷新表格`menuStore.reloadTableData({ query: query, likeMode: 'ANYWHERE' })`。
 
@@ -330,12 +330,11 @@ const { query } = toRefs(queryData.value)
 
 ### Table
 
-
 Table组件有如下功能
 
 1. 使用ElPagination分页加载数据：`loadTableData`
 2. 点击新增/编辑按钮弹出对话框：`handleEdit`，`handleCreate`
-3. 多选/单选删除：`handleBatchDelete`，`handleSingleDelete`，` onSelection-change={handleSelectChange}（多选）`
+3. 多选/单选删除：`handleBatchDelete`，`handleSingleDelete`，`onSelection-change={handleSelectChange}（多选）`
 4. 点击列头可以升序/降序排序数据（后端排序）：`onSort-change={handleSortChange}`
 5. 请求后端数据时显示加载动画：`v-loading={tableData.value.loading}`
 
@@ -504,7 +503,6 @@ const handleDelete = (ids: string[]) => {
 :::
 
 ### Dialog
-
 
 点击编辑或者新增按钮时，会修改Store中的dialogData。由于Dialog和Table中使用的都是全局状态管理共享dialogData变量。因此Dialog会弹出，对话框内部根据是编辑还是新增显示updateFrom或者createForm。
 
