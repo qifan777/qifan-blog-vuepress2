@@ -11,10 +11,14 @@ timeline: true
 
 ## 使用方法
 
+- `api.productOrderController.queryByUser` 是一个后端API方法，用于根据用户查询产品订单。
+- 第二个参数传入了`api.productOrderController`，API方法需要在控制器实例上下文中执行, 即`this`指向当前组件实例。
+- 初始化查询参数为空对象 {}。
+
 ```ts
 const { pageData } = usePageHelper(
-  api.productController.query,
-  api.productController,
+  api.productOrderController.queryByUser,
+  api.productOrderController,
   {},
 );
 ```
@@ -27,6 +31,40 @@ const { pageData } = usePageHelper(
 2. 触底加载下页
 3. 下拉刷新
 4. 首次加载
+
+- 函数签名：
+
+  ```typescript
+  export const usePageHelper = <
+    T extends Object,
+    E
+  >(
+    queryApi: (options: { readonly body: QueryRequest<T> }) => Promise<PageResult<E>>,
+    object: unknown, // 这里可能是为了调用queryApi方法时绑定上下文，但类型未指定可能需要修正
+    initQuery?: T,
+    postProcessor?: (data: PageResult<E>) => void,
+  ) => ...
+  ```
+
+- 输入参数：
+  - `queryApi`: 后端分页查询接口，接受一个包含查询请求体的对象。
+  - `object`: 用于在调用`queryApi`时绑定上下文，。
+  - `initQuery`: 可选的初始查询条件。
+  - `postProcessor`: 可选的回调函数，用于对从后端获取的分页数据进行后置处理。
+
+- 内部状态管理：
+  - `pageData`: 存储当前页面的分页数据结果。
+  - `queryRequest`: 存储当前的查询请求参数，包括查询条件、页码、每页大小等。
+
+- 定义了以下功能函数：
+  - `loadPageData`: 根据给定的查询条件请求新的一页数据，并将返回的数据合并到现有的`pageData`中，同时更新分页相关的状态。
+  - `reloadPageData`: 重置分页并重新加载第一页数据。
+  - 钩挂了Taro的生命周期/事件：
+    - `usePullDownRefresh`: 当用户下拉刷新时，清空现有内容并重新加载第一页数据。
+    - `useReachBottom`: 当用户滑动到底部时，触发加载下一页数据。
+    - `useLoad`: 页面首次加载时执行加载第一页数据。
+
+这个Hook函数可以方便地应用在任何需要展示分页数据的组件中，提供了一种统一且易于复用的方式来管理和加载来自后端的分页数据。
 
 ::: tabs
 @tab 发起分页请求

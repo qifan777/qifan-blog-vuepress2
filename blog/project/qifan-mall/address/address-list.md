@@ -87,7 +87,8 @@ public interface Address extends BaseEntity {
 
 :::tabs
 @tab 简单抓取器
-只需要返回基本字段就行了，不需要使用`COMPLEX_FETCHER`.
+
+创建一个只包含地址表所有标量字段的抓取器，用于在查询时仅获取基本属性，不加载关联对象或深度嵌套的属性, 不需要使用`COMPLEX_FETCHER`.
 
 ```java {7}
 public interface AddressRepository extends JRepository<Address, String> {
@@ -104,10 +105,17 @@ public interface AddressRepository extends JRepository<Address, String> {
 
 @tab 查询方法/设置默认
 
-```java {14-35}
+1. `getUserAddress()`方法：
+   - 使用SQL查询语句从数据库中获取当前登录用户的地址列表（通过`StpUtil.getLoginIdAsString()`获取用户ID）。
+   - 查询结果按照`top`字段降序排列，确保默认地址排在最前面。
+   - 使用了`SIMPLE_FETCHER`简单抓取器仅加载所有标量字段的数据，提高查询效率。
 
-当用户设置地址A为默认时，需要将其他地址设置为非默认，再将地址A设置为默认。
+2. `top(String id)`方法：
+   - 首先将该用户的所有地址的`top`字段设置为`false`，即取消所有其他地址的默认状态。
+   - 然后更新指定ID的地址记录，将其`top`字段设置为`true`，使其成为新的默认地址。
+   - 方法最后返回`true`表示操作成功。
 
+```java {11-32}
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -145,7 +153,13 @@ public class AddressService {
 
 @tab API
 
-返回类型需要使用`@FetchBy`声明返回的形状是什么，前端同步类型的时候，该接口返回的字段就会根据`SIMPLE_FETCHER`中抓取的字段来确定。
+1. `@DefaultFetcherOwner(AddressRepository.class)`：设置默认的数据加载器（Fetcher）的所有者为`AddressRepository`类。
+
+2. `getUserAddress()`方法：
+   - 方法内部调用`addressService.getUserAddress()`来获取当前登录用户的地址列表，返回类型使用`@FetchBy`声明返回的形状是什么，前端同步类型的时候，该接口返回的字段就会根据`SIMPLE_FETCHER`中抓取的字段来确定。`SIMPLE_FETCHER`会在上面指定的Owner中查找
+
+3. `top()`方法：
+   - 通过`@RequestParam String id`从请求中获取要设为默认地址的ID。
 
 ```java {10-18}
 @RestController
@@ -204,6 +218,22 @@ page {
 
 @tab ts
 
+1. 首先，导入了以下几个模块：
+   - `api`：从`@/utils/api-instance`中引入了一个API服务实例，用于与后端接口交互。
+   - `switchPage`：来自`@/utils/common`的一个通用函数，可能用于切换页面或导航。
+   - `AddressRow`：自定义组件，显示单个地址信息。
+   - `Taro`：Taro框架的核心库，提供了丰富的跨端API。
+   - `Edit, Del, Plus`：NutUI图标组件，用于在地址列表中进行编辑、删除和添加操作。
+   - `ref`：Vue 3.x中的响应式API，用于创建可响应的数据源。
+
+2. 定义了一个名为`addressList`的响应式引用变量，并初始化为空数组，它将用来存储用户的地址数据。
+
+3. 定义了一个异步函数`loadData()`，该函数通过调用`api.addressController.getUserAddress()`向后端请求用户的地址列表，然后将返回的地址数据赋值给`addressList.value`。
+
+4. 使用Taro生命周期钩子`useDidShow`来监听页面每次展示时触发的事件，在页面每次被打开或重新激活时调用`loadData()`函数，从而确保每次用户进入页面时都会加载最新的地址列表。
+
+`AddressDto["AddressRepository/SIMPLE_FETCHER"]`是一个类型注解，表明`addressList`数组中的元素应该是从后端接口`AddressRepository/SIMPLE_FETCHER`获取的数据类型。
+
 ```ts
 import { api } from "@/utils/api-instance";
 import { switchPage } from "@/utils/common";
@@ -235,6 +265,16 @@ Taro.useDidShow(() => {
 
 ::::tabs
 @tab html
+
+在[`<address-row>`](../reference/mp/address-row.md)组件中，有一个名为`#operation`的插槽（slot），用于地址行内的操作部分。这个插槽内包含了两个操作按钮：删除和编辑。
+
+1. 删除按钮：
+   - 使用了`<Del>`组件，并添加了类名"delete"以便于样式定制。
+   - 监听了点击事件`@click="handleDelete(address.id)"`，当用户点击删除按钮时，会触发`handleDelete`方法并将当前地址ID作为参数传入，用于执行删除指定地址的操作。
+
+2. 编辑按钮：
+   - 使用了一个假设存在的`<edit>`组件，并添加了类名"edit"。
+   - 该编辑按钮的点击事件绑定了一个函数表达式``@click="switchPage(`/pages/address/address-save?id=${address.id}`)"``，当用户点击时，将会调用`switchPage`函数并跳转到地址编辑页面，同时将地址ID作为查询参数传递给目标页面，方便用户编辑指定地址的信息。
 
 ```html {9-19}
 <template>
@@ -278,6 +318,18 @@ Taro.useDidShow(() => {
 ```
 
 @tab ts
+
+1. 函数接收一个参数`id`，即待删除地址的ID。
+
+2. 使用Taro框架提供的`showModal`方法显示一个模态对话框：
+   - 对话框标题为"是否确认删除"。
+   - 设置`showCancel`为`true`，表示在弹出框中显示取消按钮。
+   - 在`success`回调函数中处理用户点击确认或取消后的逻辑。
+
+3. 在`success`回调函数内：
+   - 首先检查用户是否点击了“确认”按钮，通过判断`confirm`属性（类型为布尔值）是否为`true`来实现。
+   - 如果用户点击的是“确认”，则调用`api.addressController.delete`方法向后端发送请求，传入包含待删除地址ID的对象。
+   - 请求成功后，调用`loadData`函数重新加载用户地址列表数据，以确保页面展示最新的地址信息。
 
 ```ts {18-33}
 import { api } from "@/utils/api-instance";
@@ -376,6 +428,15 @@ const handleDelete = (id: string) => {
 ::::tabs
 @tab html
 
+地址列表中长按地址行时显示操作菜单的功能，用户可以选择不同的操作对地址进行处理
+
+1. 监听`@longpress="showActionSheet(address)"`事件，在用户长按某个地址行时触发`showActionSheet`方法，并将当前地址作为参数传递, 随后从底部弹出菜单。
+
+2. `<nut-action-sheet>`组件：
+   - 使用`v-model:visible="show"`绑定动作菜单的可见性状态，当`show`值为`true`时显示动作菜单，否则隐藏。
+   - 绑定`:menu-items="actions"`属性，这里的`actions`是定义好的一系列操作选项，如“复制地址”、“设为默认”等。
+   - 监听`@choose="handleActionChoose"`事件，当用户从动作菜单中选择一项操作后触发`handleActionChoose`方法，这个方法会根据选择项的值执行相应的操作。
+
 ```html {8,13-18}
 <template>
   <div class="address-list-page">
@@ -399,6 +460,22 @@ const handleDelete = (id: string) => {
 ```
 
 @tab ts
+
+处理地址行长按事件并显示操作菜单的逻辑部分：
+
+1. 定义了一个响应式变量`show`，用于控制操作菜单（`<nut-action-sheet>`组件）的显示与隐藏，默认值为`false`。
+
+2. 创建另一个响应式变量`activeAddress`，存储当前被长按的目标地址信息，默认值是一个空对象。
+
+3. 定义了数组`actions`，包含了两个菜单项：复制地址和设为默认。
+
+4. 定义了一个对象`actionMap`，键是菜单项名称，值是对应的操作函数。当用户从动作菜单中选择一项时，会执行相应的操作：
+   - `复制地址`操作：将地址信息格式化后存入剪贴板。
+   - `设为默认`操作：调用API方法设置目标地址为默认地址，并在成功后重新加载数据。
+
+5. `handleActionChoose`函数根据用户选择的动作执行对应的函数。它接收一个`menuItems`类型的参数`action`，并查找`actionMap`中对应的动作函数进行执行。
+
+6. `showActionSheet`函数在用户长按地址行时触发，它接收被长按的地址对象作为参数，并将其赋值给`activeAddress`，同时将`show`置为`true`以显示操作菜单。这样，在长按时，不仅会激活当前地址以便后续操作，还会显示出包含“复制地址”和“设为默认”选项的操作菜单。
 
 ```ts {1,3-35}
 import { menuItems } from "@nutui/nutui-taro/dist/types/__VUE/actionsheet/index.taro.vue";

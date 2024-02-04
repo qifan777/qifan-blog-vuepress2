@@ -184,4 +184,116 @@ const keyName = computed(() => {
 
 ```
 
+:::
+
 ### 订单展示
+
+:::tabs
+@tab html
+
+1. `<div class="order-list-page">`：定义一个包裹整个订单列表内容的容器，类名为"order-list-page"。
+
+2. 使用`v-for`指令遍历从`pageData.content`获取的所有订单数据：
+
+   ```html
+   <div class="order" v-for="order in pageData.content" :key="order.id">
+   ```
+
+   这里对每个订单项创建一个新的`.order`元素。
+
+3. 在循环内部，使用自定义组件`order-row`来展示每个订单的详细信息，并将当前订单对象作为属性值传递给该组件：
+
+   ```html
+   <order-row :order="order" @click="switchPage('./order-details?id=' + order.id)">
+   ```
+
+   当用户点击这个订单行时，会触发`switchPage`事件处理器方法，跳转到对应的订单详情页，URL中包含了当前订单ID。
+
+4. 根据订单状态动态显示按钮：
+   - 如果满足`showCancel(order.status)`条件，则显示“取消订单”按钮。
+   - 如果订单状态为 `'TO_BE_PAID'`，则显示“立即支付”按钮。
+
+```html
+<template>
+  <div class="order-list-page">
+    <div class="order" v-for="order in pageData.content" :key="order.id">
+      <order-row
+        :order="order"
+        @click="switchPage('./order-details?id=' + order.id)"
+      >
+        <nut-button size="small" plain v-if="showCancel(order.status)"
+          >取消订单</nut-button
+        >
+        <nut-button
+          size="small"
+          type="danger"
+          plain
+          v-if="order.status === 'TO_BE_PAID'"
+          >立即支付</nut-button
+        >
+      </order-row>
+    </div>
+  </div>
+</template>
+```
+
+@tab ts
+
+1. 导入所需模块：
+   - [`usePageHelper`](../reference/mp/page.md)：来自项目内部的工具函数，通常用来处理分页数据的获取、加载更多等功能。
+   - `api`：导入自定义API实例，封装了与后端接口交互的方法。
+   - `OrderRow`：导入自定义组件`OrderRow.vue`，用于在订单列表中展示每个订单的详情行。
+   - `ProductOrderStatus`：从后端生成的类型文件中导入订单状态枚举。
+   - `switchPage`：一个跳转页面的通用工具函数。
+
+2. 使用[`usePageHelper`](../reference/mp/page.md)钩子来获取当前用户相关的订单数据，并进行分页处理：
+
+   ```javascript
+   const { pageData } = usePageHelper(
+     api.productOrderController.queryByUser,
+     api.productOrderController,
+     {},
+   );
+   ```
+
+   这里传入了两个参数：
+   - 第一个参数是调用后端查询当前用户订单的API方法（`queryByUser`）。
+   - 第二个`api.productOrderController`用于绑定查询方法的上下文, 即`this`指向当前组件实例。
+   - 第三个参数是一个空对象，代表请求时需要传递给API的初始查询参数。
+
+3. 定义一个辅助函数`showCancel`，根据订单状态判断是否显示“取消订单”按钮：
+
+   ```javascript
+   const showCancel = (status: ProductOrderStatus) => {
+     return status === "TO_BE_PAID" || status === "TO_BE_DELIVERED";
+   };
+   ```
+
+   当订单状态为“待支付”或“待发货”时，此函数会返回`true`，表示允许用户操作取消订单。
+
+```ts
+import { usePageHelper } from "@/utils/page";
+import { api } from "@/utils/api-instance";
+import OrderRow from "@/components/order/order-row.vue";
+import { ProductOrderStatus } from "@/apis/__generated/model/enums";
+import { switchPage } from "@/utils/common";
+
+const { pageData } = usePageHelper(
+  api.productOrderController.queryByUser,
+  api.productOrderController,
+  {},
+);
+const showCancel = (status: ProductOrderStatus) => {
+  return status === "TO_BE_PAID" || status === "TO_BE_DELIVERED";
+};
+```
+
+@tab css
+
+```scss
+page {
+  background-color: #f5f5f5;
+}
+```
+
+:::
